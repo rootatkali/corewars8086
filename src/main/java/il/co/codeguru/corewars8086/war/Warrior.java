@@ -3,11 +3,7 @@ package il.co.codeguru.corewars8086.war;
 import il.co.codeguru.corewars8086.cpu.Cpu;
 import il.co.codeguru.corewars8086.cpu.CpuException;
 import il.co.codeguru.corewars8086.cpu.CpuState;
-import il.co.codeguru.corewars8086.memory.MemoryException;
-import il.co.codeguru.corewars8086.memory.RealModeAddress;
-import il.co.codeguru.corewars8086.memory.RealModeMemory;
-import il.co.codeguru.corewars8086.memory.RealModeMemoryRegion;
-import il.co.codeguru.corewars8086.memory.RestrictedAccessRealModeMemory;
+import il.co.codeguru.corewars8086.memory.*;
 
 
 /**
@@ -194,11 +190,11 @@ public class Warrior {
     /** Warrior's initial load address */	
     private final RealModeAddress m_loadAddress;
     /** Current state of registers & flags */	
-    private CpuState m_state;
+    private final CpuState m_state;
     /** Applies restricted access logic on top of the actual core memory */
-    private RestrictedAccessRealModeMemory m_memory;
+    private final RestrictedAccessRealModeMemory m_memory;
     /** CPU instance */
-    private Cpu m_cpu;
+    private final Cpu m_cpu;
     /** Whether or not the warrior is still alive */
     private boolean m_isAlive;
 }

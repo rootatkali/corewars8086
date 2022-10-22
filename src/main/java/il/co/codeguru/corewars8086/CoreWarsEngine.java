@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class CoreWarsEngine
 {
-	public static void main (String args[]) throws IOException
+	public static void main (String[] args) throws IOException
 	{
         CompetitionWindow c = new CompetitionWindow();
         c.setVisible(true);

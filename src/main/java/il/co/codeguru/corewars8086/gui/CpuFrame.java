@@ -6,42 +6,53 @@ import il.co.codeguru.corewars8086.war.Competition;
 import il.co.codeguru.corewars8086.war.CompetitionEventListener;
 import il.co.codeguru.corewars8086.war.War;
 
-import java.awt.Font;
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-
 public class CpuFrame extends JFrame implements CompetitionEventListener {
 	
-	private War currentWar;
+	private final War currentWar;
 	
-	private Competition competition;
+	private final Competition competition;
 	
-	private JPanel menuPanel;
+	private final JPanel menuPanel;
 	
-	private JComboBox<String> dropMenu;
+	private final JComboBox<String> dropMenu;
 	
-	private JPanel regPanel,flagPanel;
+	private final JPanel regPanel;
+  private final JPanel flagPanel;
 	
-	private RegisterField regAX,regBX,regCX,regDX,
-						regSI,regDI,regBP,regSP,
-						 regIP,regCS,regDS,regSS,
-						 regES,regE;
+	private final RegisterField regAX;
+  private final RegisterField regBX;
+  private final RegisterField regCX;
+  private final RegisterField regDX;
+  private final RegisterField regSI;
+  private final RegisterField regDI;
+  private final RegisterField regBP;
+  private final RegisterField regSP;
+  private final RegisterField regIP;
+  private final RegisterField regCS;
+  private final RegisterField regDS;
+  private final RegisterField regSS;
+  private final RegisterField regES;
+  private final RegisterField regE;
 	
-	private FlagFields flagOF,flagDF,flagIF,flagTF,
-						flagSF,flagZF,flagAF,flagPF,
-						flagCF;
+	private final FlagFields flagOF;
+  private final FlagFields flagDF;
+  private final FlagFields flagIF;
+  private final FlagFields flagTF;
+  private final FlagFields flagSF;
+  private final FlagFields flagZF;
+  private final FlagFields flagAF;
+  private final FlagFields flagPF;
+  private final FlagFields flagCF;
 
-	private JButton btnRefrash,btnSave;
+	private final JButton btnRefrash;
+  private final JButton btnSave;
 
-	private JTextArea instructionArea;
+	private final JTextArea instructionArea;
 					
 	
 	public CpuFrame(Competition c){

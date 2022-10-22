@@ -1,12 +1,6 @@
 package il.co.codeguru.corewars8086.utils;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class Disassembler {
 	
@@ -32,7 +26,7 @@ public class Disassembler {
 		StringBuilder sb = new StringBuilder();
 		String[] lines = result.split("\n");
 		for (String line : lines) {
-			String args[] = line.split("\\s\\s+");
+			String[] args = line.split("\\s\\s+");
 			StringBuffer opcode = new StringBuffer(args[1]);
 			while(opcode.length() < 10) opcode.append(" ");
 			sb.append(opcode + args[2] + "\n");

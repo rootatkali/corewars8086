@@ -16,9 +16,9 @@ public interface CompetitionEventListener extends EventListener  {
     void onWarStart();
 
     /** Possible reasons for a war session to end. */
-    public static final int SINGLE_WINNER = 0;
-    public static final int MAX_ROUND_REACHED = 1;
-    public static final int ABORTED = 2;
+    int SINGLE_WINNER = 0;
+    int MAX_ROUND_REACHED = 1;
+    int ABORTED = 2;
 
     /**
      * Called when a War ends.

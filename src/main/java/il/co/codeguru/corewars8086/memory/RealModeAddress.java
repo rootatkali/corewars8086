@@ -81,5 +81,5 @@ public class RealModeAddress {
     private final short m_offset;
 
 	/** cached linear representation of segment and offset */
-	private int m_linearAddress;
+	private final int m_linearAddress;
 }

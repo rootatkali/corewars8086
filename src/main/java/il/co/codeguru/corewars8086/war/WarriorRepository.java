@@ -2,10 +2,9 @@ package il.co.codeguru.corewars8086.war;
 
 import il.co.codeguru.corewars8086.utils.EventMulticaster;
 
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
-
-import javax.swing.JOptionPane;
 
 
 public class WarriorRepository {
@@ -17,12 +16,12 @@ public class WarriorRepository {
     private static final String WARRIOR_DIRECTORY = "survivors";
     private static final String ZOMBIE_DIRECTORY = "zombies";
 
-    private List<WarriorGroup> warriorGroups;
+    private final List<WarriorGroup> warriorGroups;
     private WarriorGroup zombieGroup;
-    private Map<String, Integer> warriorNameToGroup;
+    private final Map<String, Integer> warriorNameToGroup;
 
-    private EventMulticaster scoreEventsCaster;
-    private ScoreEventListener scoreListener;
+    private final EventMulticaster scoreEventsCaster;
+    private final ScoreEventListener scoreListener;
 
     public WarriorRepository() throws IOException {
         this(true);

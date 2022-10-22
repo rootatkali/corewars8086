@@ -1,20 +1,13 @@
 package il.co.codeguru.corewars8086.gui;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
 import il.co.codeguru.corewars8086.utils.Disassembler;
 import il.co.codeguru.corewars8086.war.Competition;
 import il.co.codeguru.corewars8086.war.CompetitionEventListener;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class MemoryFrame extends JFrame implements CompetitionEventListener {
 
@@ -23,7 +16,7 @@ public class MemoryFrame extends JFrame implements CompetitionEventListener {
 	ArrayList<JLabel> labels = new ArrayList<JLabel>();
 	
 	Competition comp;
-	private JTextArea instructionArea;
+	private final JTextArea instructionArea;
 	private int last;
 	
 	public MemoryFrame(Competition c,int address){

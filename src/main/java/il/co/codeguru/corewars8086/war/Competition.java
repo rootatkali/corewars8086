@@ -14,11 +14,12 @@ public class Competition {
 
     private CompetitionIterator competitionIterator;
 
-    private EventMulticaster competitionEventCaster, memoryEventCaster;
-    private CompetitionEventListener competitionEventListener;
-    private MemoryEventListener memoryEventListener;
+    private final EventMulticaster competitionEventCaster;
+    private final EventMulticaster memoryEventCaster;
+    private final CompetitionEventListener competitionEventListener;
+    private final MemoryEventListener memoryEventListener;
 
-    private WarriorRepository warriorRepository;
+    private final WarriorRepository warriorRepository;
 
     private War currentWar;
 

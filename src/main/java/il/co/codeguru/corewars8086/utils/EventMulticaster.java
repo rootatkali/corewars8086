@@ -3,7 +3,9 @@ package il.co.codeguru.corewars8086.utils;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.EventListener;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * An event multicaster which broadcasts Events to a number of listeners.
@@ -11,11 +13,11 @@ import java.util.*;
  */
 public class EventMulticaster {
     
-    private Class mListenerInterface;
+    private final Class mListenerInterface;
     private EventListener mProxy;
-    private Set<EventListener> mListeners = new LinkedHashSet<>();
+    private final Set<EventListener> mListeners = new LinkedHashSet<>();
 	private EventListener[] mListenersArr = new EventListener[0];
-    private Set<EventListener> mWaitingListeners = new LinkedHashSet<EventListener>();
+    private final Set<EventListener> mWaitingListeners = new LinkedHashSet<EventListener>();
     private boolean isCasting;
 
     /** Construct a new EventMulticaster for the given listener class.

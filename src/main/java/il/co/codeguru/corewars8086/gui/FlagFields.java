@@ -1,15 +1,11 @@
 package il.co.codeguru.corewars8086.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import java.awt.*;
 
 public class FlagFields extends JPanel {
 	
-	private JCheckBox checkBox;
+	private final JCheckBox checkBox;
 	
 	public FlagFields(String name) {
 		

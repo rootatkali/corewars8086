@@ -11,7 +11,7 @@ public class RealModeMemoryImpl extends AbstractRealModeMemory {
     private MemoryEventListener listener;
 
     /** Actual memory data */
-    private byte[] m_data;
+    private final byte[] m_data;
 
     /**
      * Constructor.

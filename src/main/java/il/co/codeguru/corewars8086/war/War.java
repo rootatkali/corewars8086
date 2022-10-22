@@ -37,7 +37,7 @@ public class War {
     private final static int MIN_GAP = 1024;
 
     /** Warriors in the fight */
-    private Warrior[] m_warriors;
+    private final Warrior[] m_warriors;
     /** Number of loaded warriors */
     private int m_numWarriors;
     /** Number of warriors still alive */
@@ -48,13 +48,13 @@ public class War {
      */
     private int m_nextFreeAddress;
     /** The 'physical' memory core */
-    private RealModeMemoryImpl m_core;
+    private final RealModeMemoryImpl m_core;
 
     /** The number of the current warrior */
     private int m_currentWarrior;
 
     /** The listener for war events */
-    private CompetitionEventListener m_warListener;
+    private final CompetitionEventListener m_warListener;
 
     /**
      * Constructor.
@@ -287,11 +287,8 @@ public class War {
             ++numTries;
 
             loadAddress = rand.nextInt(ARENA_SIZE);
-            found = true;
-
-            if (loadAddress < MIN_GAP) {
-                found = false;
-            }
+  
+          found = loadAddress >= MIN_GAP;
 
             if (loadAddress+warriorSize > ARENA_SIZE-MIN_GAP) {
                 found = false;
@@ -371,7 +368,7 @@ public class War {
     	}
     }
     
-    private Random rand = new Random();
+    private final Random rand = new Random();
     
     private boolean isSingleRound;
     private boolean isPaused;

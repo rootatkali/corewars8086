@@ -2,18 +2,18 @@ package il.co.codeguru.corewars8086.gui;
 
 import il.co.codeguru.corewars8086.memory.MemoryEventListener;
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
-import il.co.codeguru.corewars8086.utils.EventMulticaster;
 import il.co.codeguru.corewars8086.utils.Unsigned;
-import il.co.codeguru.corewars8086.war.*;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Enumeration;
+import il.co.codeguru.corewars8086.war.Competition;
+import il.co.codeguru.corewars8086.war.CompetitionEventListener;
+import il.co.codeguru.corewars8086.war.War;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
 
 
 /**
@@ -34,32 +34,32 @@ public class WarFrame extends JFrame
 	private static final long serialVersionUID = 1L;
 
 	/** the canvas which show the core war memory area */
-    private Canvas warCanvas;
+    private final Canvas warCanvas;
 
     /** the message area show misc. information about the current fight */
-    private JTextArea messagesArea;
+    private final JTextArea messagesArea;
 
     /** list of warrior names */
-    private JList nameList;
+    private final JList nameList;
 
     /** Model for the name list */
-    private DefaultListModel nameListModel;
+    private final DefaultListModel nameListModel;
 
     /** Holds the current round number */
     private int nRoundNumber;
 
     /** A text field showing the current round number */
-    private JTextField roundNumber;
+    private final JTextField roundNumber;
     
 	// Debugger
-	private JLabel addressFiled;
-	private JButton btnCpuState;
+	private final JLabel addressFiled;
+	private final JButton btnCpuState;
 	private CpuFrame cpuframe;
-	private JButton btnPause;
-	private JButton btnSingleRound;
+	private final JButton btnPause;
+	private final JButton btnSingleRound;
     
 
-    private JSlider speedSlider;
+    private final JSlider speedSlider;
 
     private final Competition competition;
 
@@ -363,7 +363,7 @@ public class WarFrame extends JFrame
         @Override
         public boolean equals(Object obj) {
             return (obj!=null) && (obj instanceof String) &&
-                (((String)obj).equals(name));
+                (obj.equals(name));
         }
     }
     
@@ -409,7 +409,7 @@ public class WarFrame extends JFrame
 	@Override
 	public void addressAtMouseLocationRequested(int address) {
 		RealModeAddress tmp = new RealModeAddress(
-				this.competition.getCurrentWar().ARENA_SEGMENT, (short) address);
+        War.ARENA_SEGMENT, (short) address);
 		byte data = this.competition.getCurrentWar().getMemory().readByte(tmp);
 
 		// Warrior w = this.competition.getCurrentWar().getNumWarriors()

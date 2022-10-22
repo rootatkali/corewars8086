@@ -1,15 +1,15 @@
 package il.co.codeguru.corewars8086.gui;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * @author BS
  */
 public class ColorHolder {
-    private Color colors[];
-    private Color darkColors[];
+    private final Color[] colors;
+    private final Color[] darkColors;
 	public static final int MAX_COLORS = 360;
-	private static ColorHolder ins = new ColorHolder(MAX_COLORS);
+	private static final ColorHolder ins = new ColorHolder(MAX_COLORS);
 
     private ColorHolder(int numPlayers) {
 		// see http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/

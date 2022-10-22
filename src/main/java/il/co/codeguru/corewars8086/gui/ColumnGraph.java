@@ -1,12 +1,8 @@
 package il.co.codeguru.corewars8086.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
-import javax.swing.JComponent;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
 
 /**
  * @author BS
@@ -14,12 +10,12 @@ import javax.swing.JComponent;
 public class ColumnGraph extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
-	private float[][] values;
-    private String[] names;
+	private final float[][] values;
+    private final String[] names;
     private float maxValue;
     private double reduceFactor;
-    private long numTopTeams;
-    private TeamColorHolder teamColorHolder;
+    private final long numTopTeams;
+    private final TeamColorHolder teamColorHolder;
 
     private static final int NAME_HEIGHT = 14;
     // We assume the teams' first 3 characters are the school name
@@ -27,10 +23,9 @@ public class ColumnGraph extends JComponent {
 
     public ColumnGraph(String[] names) {
         super();
-        this.names = new String[names.length];
+        this.names = Arrays.copyOf(names, names.length);
         // the first element holds the sum of all the other values
         values = new float[names.length][3];
-        System.arraycopy(names, 0, this.names, 0, names.length);
         maxValue = 0;
         reduceFactor = 5;
         numTopTeams = Math.min(names.length / 2, 10); // If you are in the top half you count as top team
@@ -135,14 +130,14 @@ public class ColumnGraph extends JComponent {
             Font origFontBackup = g.getFont();
             // For top teams, draw their initials on top of the rectangle
             // This should be their school initials - for example,
-            // "OST" for Ostrovski or "GBA" for GreenBlitz Academy
+            // "OST" for Ostrovski or "GSA" for GreenStart Academy (HaKfar HaYarok)
             String teamInitials = names[col].substring(0, Math.min(SCHOOL_PREFIX_LEN, names[col].length())).toUpperCase();
 
             // About font size - the number specified is the font's "em height"
             // See this stackoverflow question - https://graphicdesign.stackexchange.com/questions/4035/what-does-the-size-of-the-font-translate-to-exactly
             // We treat as approximately the max height of a character
             // wild guess - The width of the common character will be around the same
-            int teamInitialsFontSize = (int)Math.min(width/2, 100);
+            int teamInitialsFontSize = Math.min(width/2, 100);
             g.setFont(new Font("Default", Font.BOLD, teamInitialsFontSize));
             g.drawString(teamInitials, col*width, boxTopY - 25);
 
@@ -164,7 +159,7 @@ public class ColumnGraph extends JComponent {
             int rotatedNameFontSize = (int)Math.min(width * 0.6, 140);
             g.setFont(new Font(Font.MONOSPACED, Font.BOLD, rotatedNameFontSize));
             int charwidth = g.getFontMetrics().charWidth('A'); // monospaced so all char widths are the same
-            int lettersCanFitInRect = (int)((height1 + height2) / charwidth);
+            int lettersCanFitInRect = (height1 + height2) / charwidth;
             String nameCanFit = names[col].substring(0, Math.min(lettersCanFitInRect, names[col].length()));
 
             // Invert the color so we can see best

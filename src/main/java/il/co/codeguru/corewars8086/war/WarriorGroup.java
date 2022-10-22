@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WarriorGroup {
-    private String name;
-    private ArrayList<WarriorData> warriorData;
-    private List<Float> scores;
+    private final String name;
+    private final ArrayList<WarriorData> warriorData;
+    private final List<Float> scores;
     private float groupScore;
 
     public WarriorGroup(String name) {

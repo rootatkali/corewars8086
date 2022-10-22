@@ -1,11 +1,17 @@
 package il.co.codeguru.corewars8086.gui;
 
-import il.co.codeguru.corewars8086.war.*;
+import il.co.codeguru.corewars8086.war.Competition;
+import il.co.codeguru.corewars8086.war.CompetitionEventListener;
+import il.co.codeguru.corewars8086.war.ScoreEventListener;
+import il.co.codeguru.corewars8086.war.WarriorRepository;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.IOException;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.IOException;
 
 /**
  * @author BS
@@ -14,15 +20,15 @@ public class CompetitionWindow extends JFrame
     implements ScoreEventListener, ActionListener, CompetitionEventListener {
 	private static final long serialVersionUID = 1L;
 	
-	private Competition competition;
-    private ColumnGraph columnGraph;
+	private final Competition competition;
+    private final ColumnGraph columnGraph;
 
     // widgets
-    private JButton runWarButton;
-    private JLabel warCounterDisplay;
-    private JCheckBox showBattleCheckBox;
-    private JTextField battlesPerGroupField;
-    private JTextField warriorsPerGroupField;
+    private final JButton runWarButton;
+    private final JLabel warCounterDisplay;
+    private final JCheckBox showBattleCheckBox;
+    private final JTextField battlesPerGroupField;
+    private final JTextField warriorsPerGroupField;
     private WarFrame battleFrame;
 
     private int warCounter;
@@ -31,9 +37,9 @@ public class CompetitionWindow extends JFrame
 	private boolean competitionRunning;
 
     private static final String SEED_PREFIX = "SEED!@#=";
-    private JTextField seed;
+    private final JTextField seed;
 
-	private JCheckBox startPausedCheckBox;
+	private final JCheckBox startPausedCheckBox;
 
     public CompetitionWindow() throws IOException {
         super("CodeGuru Extreme - Competition Viewer");
@@ -146,7 +152,7 @@ public class CompetitionWindow extends JFrame
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                };
+                }
             };
             if (!competitionRunning) {
             	warThread.start();
@@ -256,7 +262,7 @@ public class CompetitionWindow extends JFrame
             public void run() {
                 warCounterDisplay.setText("Wars so far:" + warCounter +
                     " (out of " + totalWars + ")");
-            };
+            }
         });
     }
 
@@ -281,7 +287,7 @@ public class CompetitionWindow extends JFrame
             public void run() {
                 warCounterDisplay.setText("The competition is over. " +
                     warCounter + " wars were run.");
-            };
+            }
         });
         warThread = null;
         runWarButton.setText("<html><font color=red>Start!</font></html>");

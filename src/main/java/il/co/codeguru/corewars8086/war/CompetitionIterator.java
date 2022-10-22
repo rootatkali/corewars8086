@@ -7,8 +7,8 @@ import java.util.Iterator;
 
 public class CompetitionIterator implements Iterator<int[]> {
 	private final RandomDataGenerator rnd;
-	private int[] counters;
-	private int numItems;
+	private final int[] counters;
+	private final int numItems;
 	private final int groupSize;
 
     public CompetitionIterator(int numItems, int groupSize) {

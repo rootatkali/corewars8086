@@ -2,13 +2,10 @@ package il.co.codeguru.corewars8086.gui;
 
 import il.co.codeguru.corewars8086.utils.EventMulticaster;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JComponent;
+import javax.swing.*;
 import javax.swing.event.MouseInputListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 
 
 /**
@@ -25,18 +22,18 @@ public class Canvas extends JComponent implements MouseInputListener {
     
     private boolean[][] pointer; 
        
-	private EventMulticaster eventCaster;
-	private MouseAddressRequest eventHandler;
+	private final EventMulticaster eventCaster;
+	private final MouseAddressRequest eventHandler;
 
-	private int MouseX, MouseY;
+	private int mouseX, mouseY;
 
     public Canvas() {
 		eventCaster = new EventMulticaster(MouseAddressRequest.class);
 		eventHandler = (MouseAddressRequest) eventCaster.getProxy();
 		this.addMouseMotionListener(this);
 		this.addMouseListener(this);
-		this.MouseX = 0;
-		this.MouseY = 0;
+		this.mouseX = 0;
+		this.mouseY = 0;
         clear();
     }
 
@@ -130,34 +127,31 @@ public class Canvas extends JComponent implements MouseInputListener {
 		if (g != null) {
 			// delete Mouse
 			this.clearMousePointer(g);
-
-			if (true) {
-				MouseX = e.getX() / DOT_SIZE;
-				MouseY = e.getY() / DOT_SIZE;
-
-				// draw new Mouse
-				g.setColor(Color.WHITE);
-
-				g.fillRect(MouseX * DOT_SIZE, MouseY * DOT_SIZE, DOT_SIZE,
-						DOT_SIZE);
-			}
+			
+			mouseX = e.getX() / DOT_SIZE;
+			mouseY = e.getY() / DOT_SIZE;
+			
+			// draw new Mouse
+			g.setColor(Color.WHITE);
+			
+			g.fillRect(mouseX * DOT_SIZE, mouseY * DOT_SIZE, DOT_SIZE, DOT_SIZE);
 		}
 	}
     
 	private void clearMousePointer(Graphics g) {
 		try {
 			g.setColor(ColorHolder.getInstance()
-					.getColor(data[MouseX][MouseY],false));
+					.getColor(data[mouseX][mouseY],false));
 		} catch (Exception ex) {
 			// TODO the true variable of the color
 			g.setColor(new Color(51, 51, 51)); 
 		}
-		g.fillRect(MouseX * DOT_SIZE, MouseY * DOT_SIZE, DOT_SIZE, DOT_SIZE);
+		g.fillRect(mouseX * DOT_SIZE, mouseY * DOT_SIZE, DOT_SIZE, DOT_SIZE);
 	}
 	
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		eventHandler.addressAtMouseLocationRequested(this.MouseX + BOARD_SIZE* this.MouseY);
+		eventHandler.addressAtMouseLocationRequested(this.mouseX + BOARD_SIZE* this.mouseY);
 	}
 	
 	@Override

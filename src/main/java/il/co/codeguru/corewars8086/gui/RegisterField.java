@@ -1,15 +1,11 @@
 package il.co.codeguru.corewars8086.gui;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
 
 public class RegisterField extends JPanel {
 
-	private JTextField textField;
+	private final JTextField textField;
 
 	public RegisterField(String name) {
 

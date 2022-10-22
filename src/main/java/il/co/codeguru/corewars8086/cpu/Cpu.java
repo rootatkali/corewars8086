@@ -2189,7 +2189,7 @@ public class Cpu {
      * Parity table implementation.
      * An array memeber of 'true' means the bit parity for the given index is EVEN.
      */
-    private static final boolean PARITY_TABLE[] = {
+    private static final boolean[] PARITY_TABLE = {
         true, false, false, true, false, true, true, false,
         false, true, true, false, true, false, false, true,
         false, true, true, false, true, false, false, true,
