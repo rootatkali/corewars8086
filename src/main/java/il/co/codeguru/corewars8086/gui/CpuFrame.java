@@ -49,7 +49,7 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
   private final FlagFields flagPF;
   private final FlagFields flagCF;
 
-	private final JButton btnRefrash;
+	private final JButton btnRefresh;
   private final JButton btnSave;
 
 	private final JTextArea instructionArea;
@@ -103,37 +103,17 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
 		
 		menuPanel = new JPanel();
 		
-		dropMenu = new JComboBox<String>();
+		dropMenu = new JComboBox<>();
 		for( int i = 0 ; i < this.currentWar.getNumWarriors() ; i++ )
 			dropMenu.addItem(this.currentWar.getWarrior(i).getName());
 		
-		dropMenu.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updateFileds();
-			}
-		});
+		dropMenu.addActionListener(e -> updateFields());
 		
-		btnRefrash = new JButton("Refrash");
-		btnRefrash.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updateFileds();
-				
-			}
-		});
+		btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(e -> updateFields());
 		
 		btnSave = new JButton("Save");
-		btnSave.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				saveFileds();
-			}
-		});
+		btnSave.addActionListener(e -> saveFields());
 		
 		instructionArea = new JTextArea(); 
 		instructionArea.setFont(new Font("Monospaced",Font.PLAIN,15));
@@ -141,13 +121,11 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
 		instructionArea.setLineWrap(true);
 		instructionArea.setWrapStyleWord(true);
 		
-		this.updateFileds();
+		this.updateFields();
 		
 		menuPanel.add(dropMenu);
-		menuPanel.add(btnRefrash);
+		menuPanel.add(btnRefresh);
 		menuPanel.add(btnSave);
-		
-		
 		
 		JPanel cpuPanel = new JPanel(new GridLayout(1, 3));
 		cpuPanel.add(menuPanel);
@@ -160,11 +138,9 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
 		this.setLayout(new GridLayout(2,1,10,10));
 		this.setResizable(false);
 		this.setVisible(true);
-		
-				
 	}
 	
-	public void updateFileds(){
+	public void updateFields(){
 		regAX.setValue( currentWar.getWarrior(dropMenu.getSelectedIndex()).getCpuState().getAX());
 		regBX.setValue( currentWar.getWarrior(dropMenu.getSelectedIndex()).getCpuState().getBX());
 		regCX.setValue( currentWar.getWarrior(dropMenu.getSelectedIndex()).getCpuState().getCX());
@@ -207,7 +183,7 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
 		}
 	}
 	
-	public void saveFileds(){
+	public void saveFields(){
 		try {
 			this.currentWar.getWarrior(this.dropMenu.getSelectedIndex()).getCpuState().setAX(regAX.getValue());
 			this.currentWar.getWarrior(this.dropMenu.getSelectedIndex()).getCpuState().setBX(regBX.getValue());
@@ -283,7 +259,7 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
 	@Override
 	public void onEndRound() {
 		// TODO Auto-generated method stub
-		this.updateFileds();
+		this.updateFields();
 	}
 
 	@Override
