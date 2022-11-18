@@ -235,12 +235,7 @@ public class WarriorRepository {
   public String getScores() {
     String str = "";
     List<WarriorGroup> sorted = new ArrayList<>(warriorGroups);
-    Collections.sort(sorted, new Comparator<WarriorGroup>() {
-      @Override
-      public int compare(WarriorGroup o1, WarriorGroup o2) {
-        return (int) (o2.getGroupScore() - o1.getGroupScore());
-      }
-    });
+    sorted.sort((o1, o2) -> (int) (o2.getGroupScore() - o1.getGroupScore()));
     for (WarriorGroup group : sorted) {
       List<Float> scores = group.getScores();
       List<WarriorData> data = group.getWarriors();

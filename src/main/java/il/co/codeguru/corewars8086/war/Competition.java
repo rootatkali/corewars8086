@@ -6,6 +6,9 @@ import il.co.codeguru.corewars8086.utils.EventMulticaster;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class Competition {
@@ -56,13 +59,13 @@ public class Competition {
   
   public void runCompetition(int warsPerCombination, int warriorsPerGroup, boolean startPaused) throws Exception {
     this.warsPerCombination = warsPerCombination;
-    competitionIterator = new CompetitionIterator(
-        warriorRepository.getNumberOfGroups(), warriorsPerGroup);
+    competitionIterator = new CompetitionIterator(warriorRepository.getNumberOfGroups(), warriorsPerGroup);
     
     // run on every possible combination of warrior groups
     competitionEventListener.onCompetitionStart();
+    
     for (int warCount = 0; warCount < getTotalNumberOfWars(); warCount++) {
-      runWar(warriorRepository.createGroupList(competitionIterator.next()), startPaused);
+      runWar(warriorRepository.createGroupList(competitionIterator.next()), startPaused, seed);
       seed++;
       if (abort) {
         break;
@@ -72,13 +75,45 @@ public class Competition {
     warriorRepository.saveScoresToFile(options.outputFile);
   }
   
+  public void runCompetitionInParallel(int warsPerCombination, int warriorsPerGroup, int threads) throws InterruptedException {
+    this.warsPerCombination = warsPerCombination;
+    competitionIterator = new CompetitionIterator(warriorRepository.getNumberOfGroups(), warriorsPerGroup);
+    competitionEventListener.onCompetitionStart();
+    
+    ExecutorService executorService = Executors.newFixedThreadPool(threads);
+    
+    for (int warCount = 0; warCount < getTotalNumberOfWars(); warCount++) {
+      WarriorGroup[] groups = warriorRepository.createGroupList(competitionIterator.next());
+      int id = warCount;
+      executorService.submit(() -> {
+        try {
+          runWarInParallel(groups, seed, id);
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
+      });
+      seed++;
+    }
+    
+    executorService.shutdown();
+    boolean finished = executorService.awaitTermination(1, TimeUnit.HOURS);
+    
+    if (!finished) {
+      System.err.println("Note: Competition has timed out after 1h - results may be incorrect.");
+    }
+    
+    competitionEventListener.onCompetitionEnd();
+    warriorRepository.saveScoresToFile(options.outputFile);
+    
+  }
+  
   public int getTotalNumberOfWars() {
     return (int) competitionIterator.getNumberOfItems() * warsPerCombination;
   }
   
-  public void runWar(WarriorGroup[] warriorGroups, boolean startPaused) throws Exception {
+  public void runWar(WarriorGroup[] warriorGroups, boolean startPaused, long seed) throws Exception {
     currentWar = new War(memoryEventListener, competitionEventListener, startPaused);
-    currentWar.setSeed(this.seed);
+    currentWar.setSeed(seed);
     competitionEventListener.onWarStart();
     currentWar.loadWarriorGroups(warriorGroups);
     
@@ -131,6 +166,38 @@ public class Competition {
     }
     currentWar.updateScores(warriorRepository);
     currentWar = null;
+  }
+  
+  public void runWarInParallel(WarriorGroup[] warriorGroups, long seed, int id) throws Exception {
+    War war = new War(memoryEventListener, competitionEventListener, false);
+    war.setSeed(seed);
+    competitionEventListener.onWarStart();
+    war.loadWarriorGroups(warriorGroups);
+    
+    int round = 0;
+    while (round < MAX_ROUND) {
+      competitionEventListener.onRound(round);
+      competitionEventListener.onEndRound();
+      
+      if (war.isOver()) break;
+      
+      war.nextRound(round);
+      ++round;
+    }
+    competitionEventListener.onRound(round);
+  
+    int numAlive = war.getNumRemainingWarriors();
+    String names = war.getRemainingWarriorNames();
+  
+    if (numAlive == 1) { // we have a single winner!
+      competitionEventListener.onWarEnd(CompetitionEventListener.SINGLE_WINNER, names);
+    } else if (round == MAX_ROUND) { // maximum round reached
+      competitionEventListener.onWarEnd(CompetitionEventListener.MAX_ROUND_REACHED, names);
+    } else { // user abort
+      competitionEventListener.onWarEnd(CompetitionEventListener.ABORTED, names);
+    }
+    
+    war.updateScores(warriorRepository);
   }
   
   public int getCurrentWarrior() {
