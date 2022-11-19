@@ -212,6 +212,7 @@ public class WarriorRepository {
   
   public void saveScoresToFile(String filename) {
     try {
+      System.out.printf("Saving scores to file %s%n", filename);
       FileOutputStream fos = new FileOutputStream(filename);
       PrintStream ps = new PrintStream(fos);
       ps.print("Groups:\n");

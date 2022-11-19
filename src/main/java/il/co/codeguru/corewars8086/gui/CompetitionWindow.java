@@ -42,8 +42,11 @@ public class CompetitionWindow extends JFrame
   
   private final JCheckBox startPausedCheckBox;
   
+  private final Options options;
+  
   public CompetitionWindow(Options options) throws IOException {
     super("CodeGuru Extreme - Competition Viewer");
+    this.options = options;
     getContentPane().setLayout(new BorderLayout());
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     competition = new Competition(options);
@@ -156,7 +159,11 @@ public class CompetitionWindow extends JFrame
         @Override
         public void run() {
           try {
-            competition.runCompetition(battlesPerGroup, warriorsPerGroup, startPausedCheckBox.isSelected());
+            if (options.parallel) {
+              competition.runCompetitionInParallel(battlesPerGroup, warriorsPerGroup, options.threads);
+            } else {
+              competition.runCompetition(battlesPerGroup, warriorsPerGroup, startPausedCheckBox.isSelected());
+            }
           } catch (Exception e) {
             e.printStackTrace();
           }

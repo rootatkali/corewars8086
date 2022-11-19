@@ -3,4 +3,4 @@ target/
 .idea/**
 survivors/
 zombies/
-scores.csv
+*.csv

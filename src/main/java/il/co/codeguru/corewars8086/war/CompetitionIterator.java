@@ -18,7 +18,7 @@ public class CompetitionIterator implements Iterator<int[]> {
         counters = new int[groupSize];
 
 		rnd = new RandomDataGenerator();
-    }	
+    }
 
     /**
      * Returns the next group in the sequence
