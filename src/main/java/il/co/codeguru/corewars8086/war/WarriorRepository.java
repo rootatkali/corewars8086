@@ -92,7 +92,7 @@ public class WarriorRepository {
         continue;
       }
       
-      WarriorData data = readWarriorFile(file);
+      WarriorData data = readWarriorFile(file, WarriorType.ZOMBIE);
       zombieGroup.addWarrior(data);
     }
   }
@@ -123,20 +123,20 @@ public class WarriorRepository {
       }
       
       String name = file.getName();
-      WarriorData data = readWarriorFile(file);
+      
       if (name.endsWith("1")) {
         // start a new group!
         currentGroup = new WarriorGroup(name.substring(0, name.length() - 1));
-        currentGroup.addWarrior(data);
+        currentGroup.addWarrior(readWarriorFile(file, WarriorType.SURVIVOR1));
         warriorNameToGroup.put(name, warriorGroups.size());
       } else if (name.endsWith("2")) {
-        currentGroup.addWarrior(data);
+        currentGroup.addWarrior(readWarriorFile(file, WarriorType.SURVIVOR2));
         warriorNameToGroup.put(name, warriorGroups.size());
         warriorGroups.add(currentGroup);
         currentGroup = null;
       } else {
         currentGroup = new WarriorGroup(name);
-        currentGroup.addWarrior(data);
+        currentGroup.addWarrior(readWarriorFile(file, WarriorType.SURVIVOR));
         warriorNameToGroup.put(name, warriorGroups.size());
         warriorGroups.add(currentGroup);
         currentGroup = null;
@@ -167,7 +167,7 @@ public class WarriorRepository {
     }
   }
   
-  private static WarriorData readWarriorFile(File filename) throws IOException {
+  private static WarriorData readWarriorFile(File filename, WarriorType type) throws IOException {
     String warriorName = filename.getName();
     
     int warriorSize = (int) filename.length();
@@ -184,7 +184,7 @@ public class WarriorRepository {
       throw new IOException();
     }
     
-    return new WarriorData(warriorName, warriorData);
+    return new WarriorData(warriorName, warriorData, type);
   }
   
   /**

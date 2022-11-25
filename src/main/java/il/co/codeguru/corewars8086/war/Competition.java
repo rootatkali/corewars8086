@@ -5,7 +5,6 @@ import il.co.codeguru.corewars8086.memory.MemoryEventListener;
 import il.co.codeguru.corewars8086.utils.EventMulticaster;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -116,7 +115,7 @@ public class Competition {
   }
   
   public void runWar(WarriorGroup[] warriorGroups, boolean startPaused, long seed) throws Exception {
-    currentWar = new War(memoryEventListener, competitionEventListener, startPaused);
+    currentWar = new War(memoryEventListener, competitionEventListener, startPaused, options);
     currentWar.setSeed(seed);
     competitionEventListener.onWarStart(seed);
     currentWar.loadWarriorGroups(warriorGroups);
@@ -173,7 +172,7 @@ public class Competition {
   }
   
   public void runWarInParallel(WarriorGroup[] warriorGroups, long seed, int id) throws Exception {
-    War war = new War(memoryEventListener, competitionEventListener, false);
+    War war = new War(memoryEventListener, competitionEventListener, false, options);
     war.setSeed(seed);
     competitionEventListener.onWarStart(seed);
     war.loadWarriorGroups(warriorGroups);

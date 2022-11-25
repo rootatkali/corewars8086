@@ -31,14 +31,17 @@ public class Warrior {
         RealModeAddress loadAddress,
         RealModeAddress initialStack,
         RealModeAddress groupSharedMemory,
-        short groupSharedMemorySize) {
+        short groupSharedMemorySize,
+        WarriorType type,
+        short energy) {
 
         m_name = name;
         m_codeSize = codeSize;
         m_loadAddress = loadAddress;
+        this.type = type;
 
         m_state = new CpuState();
-        initializeCpuState(loadAddress, initialStack, groupSharedMemory);
+        initializeCpuState(loadAddress, initialStack, groupSharedMemory, energy);
 
         // initialize read-access regions
         RealModeAddress lowestStackAddress =
@@ -85,6 +88,10 @@ public class Warrior {
      */
     public boolean isAlive() {
         return m_isAlive;
+    }
+    
+    public boolean isZombie() {
+        return this.type == WarriorType.ZOMBIE;
     }
 
     /**
@@ -134,7 +141,11 @@ public class Warrior {
     public void nextOpcode() throws CpuException, MemoryException {
         m_cpu.nextOpcode();
     }
-
+    
+    public WarriorType getType() {
+        return type;
+    }
+    
     /**
      * Initializes the Cpu registers & flags:
      *  CS,DS                    - set to the core's segment.
@@ -150,7 +161,7 @@ public class Warrior {
      */
     private void initializeCpuState(
         RealModeAddress loadAddress, RealModeAddress initialStack,
-        RealModeAddress groupSharedMemory) {
+        RealModeAddress groupSharedMemory, short energy) {
 
         // initialize registers
         m_state.setAX(loadAddress.getOffset());
@@ -172,7 +183,7 @@ public class Warrior {
         m_state.setFlags((short)0);
 
         // initialize Energy
-        m_state.setEnergy((short)0);
+        m_state.setEnergy(energy);
 
         // initialize bombs
         m_state.setBomb1Count((byte)2);
@@ -197,4 +208,6 @@ public class Warrior {
     private final Cpu m_cpu;
     /** Whether or not the warrior is still alive */
     private boolean m_isAlive;
+    
+    private final WarriorType type;
 }
