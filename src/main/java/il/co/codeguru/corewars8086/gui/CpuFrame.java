@@ -215,7 +215,7 @@ public class CpuFrame extends JFrame implements CompetitionEventListener {
 	}
 
 	@Override
-	public void onWarStart() {
+	public void onWarStart(long seed) {
 		// TODO Auto-generated method stub
 		
 	}

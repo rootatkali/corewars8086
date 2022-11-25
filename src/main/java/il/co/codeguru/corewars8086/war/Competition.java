@@ -41,6 +41,8 @@ public class Competition {
   
   private boolean abort;
   
+  private ExecutorService executorService;
+  
   public Competition(Options options) throws IOException {
     this(true, options);
   }
@@ -80,27 +82,29 @@ public class Competition {
     competitionIterator = new CompetitionIterator(warriorRepository.getNumberOfGroups(), warriorsPerGroup);
     competitionEventListener.onCompetitionStart();
     
-    ExecutorService executorService = Executors.newFixedThreadPool(threads);
+    executorService = Executors.newFixedThreadPool(threads);
     
     for (int warCount = 0; warCount < getTotalNumberOfWars(); warCount++) {
       WarriorGroup[] groups = warriorRepository.createGroupList(competitionIterator.next());
       int id = warCount;
+      long warSeed = seed++;
       executorService.submit(() -> {
         try {
-          runWarInParallel(groups, seed, id);
+          runWarInParallel(groups, warSeed, id);
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
       });
-      seed++;
     }
     
     executorService.shutdown();
     boolean finished = executorService.awaitTermination(1, TimeUnit.HOURS);
     
     if (!finished) {
-      System.err.println("Note: Competition has timed out after 1h - results may be incorrect.");
+      System.err.println("Note: Competition has timed out after 1h or was aborted - results may be incorrect.");
     }
+    
+    executorService = null;
     
     competitionEventListener.onCompetitionEnd();
     warriorRepository.saveScoresToFile(options.outputFile);
@@ -114,7 +118,7 @@ public class Competition {
   public void runWar(WarriorGroup[] warriorGroups, boolean startPaused, long seed) throws Exception {
     currentWar = new War(memoryEventListener, competitionEventListener, startPaused);
     currentWar.setSeed(seed);
-    competitionEventListener.onWarStart();
+    competitionEventListener.onWarStart(seed);
     currentWar.loadWarriorGroups(warriorGroups);
     
     // go go go!
@@ -171,7 +175,7 @@ public class Competition {
   public void runWarInParallel(WarriorGroup[] warriorGroups, long seed, int id) throws Exception {
     War war = new War(memoryEventListener, competitionEventListener, false);
     war.setSeed(seed);
-    competitionEventListener.onWarStart();
+    competitionEventListener.onWarStart(seed);
     war.loadWarriorGroups(warriorGroups);
     
     int round = 0;
@@ -244,6 +248,11 @@ public class Competition {
   
   public void setAbort(boolean abort) {
     this.abort = abort;
+    
+    if (abort && executorService != null) {
+      executorService.shutdownNow();
+      executorService = null;
+    }
   }
   
   

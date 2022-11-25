@@ -130,15 +130,11 @@ public class WarFrame extends JFrame
 
 		btnCpuState = new JButton("View CPU");
 		btnCpuState.setEnabled(false);
-		btnCpuState.addActionListener(new ActionListener() {
+		btnCpuState.addActionListener(e -> {
+      cpuframe = new CpuFrame(competition);
+      WarFrame.this.competition.addCompetitionEventListener(cpuframe);
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				cpuframe = new CpuFrame(competition);
-				WarFrame.this.competition.addCompetitionEventListener(cpuframe);
-
-			}
-		});
+    });
 
 		competition.addCompetitionEventListener(this);
 		
@@ -163,13 +159,7 @@ public class WarFrame extends JFrame
 
 		btnSingleRound = new JButton("Single Round");
 		btnSingleRound.setEnabled(false);
-		btnSingleRound.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				competition.getCurrentWar().runSingleRound();
-			}
-		});
+		btnSingleRound.addActionListener(e -> competition.getCurrentWar().runSingleRound());
         
 		buttonPanel.add(btnCpuState);
 		buttonPanel.add(btnPause);
@@ -226,8 +216,8 @@ public class WarFrame extends JFrame
         }
     }
 
-    /** @see CompetitionEventListener#onWarStart(int) */
-    public void onWarStart() {
+    /** @see CompetitionEventListener#onWarStart(long) */
+    public void onWarStart(long seed) {
         addMessage("=== Session started ===");
         nameListModel.clear();
         warCanvas.clear();

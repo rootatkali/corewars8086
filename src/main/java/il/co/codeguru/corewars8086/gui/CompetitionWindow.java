@@ -180,7 +180,7 @@ public class CompetitionWindow extends JFrame
   }
   
   public void scoreChanged(String name, float addedValue, int groupIndex, int subIndex) {
-    columnGraph.addToValue(groupIndex, subIndex, addedValue);
+    SwingUtilities.invokeLater(() -> columnGraph.addToValue(groupIndex, subIndex, addedValue));
   }
   
   public void actionPerformed(ActionEvent e) {
@@ -202,8 +202,9 @@ public class CompetitionWindow extends JFrame
     }
   }
   
-  
-  public void onWarStart() {
+  @Override
+  public void onWarStart(long seed) {
+    SwingUtilities.invokeLater(() -> this.seed.setText(SEED_PREFIX + seed));
     showBattleFrameIfNeeded();
   }
   
@@ -267,13 +268,9 @@ public class CompetitionWindow extends JFrame
   
   public void onWarEnd(int reason, String winners) {
     warCounter++;
-    seed.setText(SEED_PREFIX + competition.getSeed());
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        warCounterDisplay.setText("Wars so far:" + warCounter +
-            " (out of " + totalWars + ")");
-      }
-    });
+    SwingUtilities.invokeLater(
+        () -> warCounterDisplay.setText(String.format("Wars so far: %d (out of %d)", warCounter, totalWars))
+    );
   }
   
   public void onRound(int round) {
@@ -293,12 +290,8 @@ public class CompetitionWindow extends JFrame
   }
   
   public void onCompetitionEnd() {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        warCounterDisplay.setText("The competition is over. " +
-            warCounter + " wars were run.");
-      }
-    });
+    SwingUtilities.invokeLater(() -> warCounterDisplay.setText("The competition is over. " +
+        warCounter + " wars were run."));
     warThread = null;
     runWarButton.setText("<html><font color=red>Start!</font></html>");
     competitionRunning = false;
