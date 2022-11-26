@@ -66,4 +66,12 @@ public class Options extends OptionsBase {
       defaultValue = "scores.csv"
   )
   public String outputFile;
+  
+  @Option(
+      name = "colorsFile",
+      help = "Path to static team color file",
+      category = "Graphics",
+      defaultValue = "colors.csv"
+  )
+  public String colorsFile;
 }

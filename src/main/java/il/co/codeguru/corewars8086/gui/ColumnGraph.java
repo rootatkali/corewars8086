@@ -2,6 +2,7 @@ package il.co.codeguru.corewars8086.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -21,7 +22,7 @@ public class ColumnGraph extends JComponent {
     // We assume the teams' first 3 characters are the school name
     private static final int SCHOOL_PREFIX_LEN = 3;
 
-    public ColumnGraph(String[] names) {
+    public ColumnGraph(String[] names, String colorsFile) throws IOException {
         super();
         this.names = Arrays.copyOf(names, names.length);
         // the first element holds the sum of all the other values
@@ -31,7 +32,7 @@ public class ColumnGraph extends JComponent {
         numTopTeams = Math.min(names.length / 2, 10); // If you are in the top half you count as top team
         // Give out colors by the team name first 3 characters
         // So teams from the same school have the same color
-        teamColorHolder = new TeamColorHolder(names, SCHOOL_PREFIX_LEN);
+        teamColorHolder = new TeamColorHolder(names, SCHOOL_PREFIX_LEN, colorsFile);
     }
 
     @Override
@@ -138,7 +139,7 @@ public class ColumnGraph extends JComponent {
             // We treat as approximately the max height of a character
             // wild guess - The width of the common character will be around the same
             int teamInitialsFontSize = Math.min(width/2, 100);
-            g.setFont(new Font("Default", Font.BOLD, teamInitialsFontSize));
+            g.setFont(new Font(Font.MONOSPACED, Font.BOLD, teamInitialsFontSize));
             g.drawString(teamInitials, col*width, boxTopY - 25);
 
            
