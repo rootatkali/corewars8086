@@ -1,5 +1,7 @@
 package il.co.codeguru.corewars8086.war;
 
+import com.google.common.collect.Range;
+import com.google.common.collect.RangeSet;
 import il.co.codeguru.corewars8086.cli.Options;
 import il.co.codeguru.corewars8086.cpu.CpuException;
 import il.co.codeguru.corewars8086.memory.MemoryEventListener;
@@ -146,11 +148,18 @@ public class War {
           // run first opcode
           warrior.nextOpcode();
           
-          // run one extra opcode, if warrior deserves it :)
-          updateWarriorEnergy(warrior, round);
-          if (shouldRunExtraOpcode(warrior)) {
-            warrior.nextOpcode();
+          if (warrior.isZombie()) {
+            for (int j = 0; j < 4; j++) {
+              warrior.nextOpcode();
+            }
+          } else {
+            // run one extra opcode, if warrior deserves it :)
+            updateWarriorEnergy(warrior, round);
+            if (shouldRunExtraOpcode(warrior)) {
+              warrior.nextOpcode();
+            }
           }
+          
         } catch (CpuException e) {
           m_warListener.onWarriorDeath(warrior.getName(), "CPU exception");
           warrior.kill();
