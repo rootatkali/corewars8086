@@ -7,4 +7,12 @@ package il.co.codeguru.corewars8086.cpu;
  */
 public class UnimplementedOpcodeException extends CpuException {
 	private static final long serialVersionUID = 1L;
+
+	public UnimplementedOpcodeException() {
+		super();
+	}
+
+	public UnimplementedOpcodeException(int opcode) {
+		super(String.format("Opcode %x is not supported", opcode));
+	}
 }
