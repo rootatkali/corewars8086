@@ -34,6 +34,13 @@ public class InterruptExecutor {
 
     };
 
+    public static final Instruction INTERRUPT = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        byte interruptIndex = opcodeFetcher.nextByte();
+        Instruction interrupt = resolveInterrupt(interruptIndex);
+
+        interrupt.execute(state, memory, opcodeFetcher, registers, addressingDecoder);
+    };
+
     static {
         IVT.add((byte) 0x86, INT86);
         IVT.add((byte) 0x87, INT87);
@@ -43,7 +50,13 @@ public class InterruptExecutor {
         try {
             return IVT.resolve(index);
         } catch (CpuException e) {
-            throw new IntOpcodeException();
+            throw new IntOpcodeException(String.format("Interrupt %x not supported", index));
         }
+    }
+
+    public static final InstructionResolver INTERRUPT_INSTRUCTIONS = new InstructionResolver();
+
+    static {
+        INTERRUPT_INSTRUCTIONS.add((byte) 0xCD, INTERRUPT);
     }
 }
