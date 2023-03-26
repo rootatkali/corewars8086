@@ -13,6 +13,6 @@ public class UnimplementedOpcodeException extends CpuException {
 	}
 
 	public UnimplementedOpcodeException(int opcode) {
-		super(String.format("Opcode %x is not supported", opcode));
+		super(String.format("Opcode %x is not implemented", opcode));
 	}
 }

@@ -15,4 +15,8 @@ public class UnsupportedOpcodeException extends CpuException {
 	public UnsupportedOpcodeException(String message) {
 		super(message);
 	}
+
+	public UnsupportedOpcodeException(int opcode) {
+		this(String.format("Opcode %x is not supported", opcode));
+	}
 }

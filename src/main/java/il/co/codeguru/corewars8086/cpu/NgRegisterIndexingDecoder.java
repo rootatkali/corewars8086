@@ -17,7 +17,7 @@ public class NgRegisterIndexingDecoder {
      * @param index   CPU's internal register index.
      * @return the value of the 8bit register whose index is given.
      */
-    public byte getReg8(byte index) {
+    public byte getRegister8(byte index) {
         switch (index) {
             case 0:
                 return state.getAl();
@@ -45,7 +45,7 @@ public class NgRegisterIndexingDecoder {
      * @param index   CPU's internal register index.
      * @param value   New value for above register.
      */
-    public void setReg8(byte index, byte value) {
+    public void setRegister8(byte index, byte value) {
         switch (index) {
             case 0:
                 state.setAl(value);
@@ -81,7 +81,7 @@ public class NgRegisterIndexingDecoder {
      * @param index   CPU's internal register index.
      * @return the value of the 16bit register whose index is given.
      */
-    public short getReg16(byte index) {
+    public short getRegister16(byte index) {
         switch (index) {
             case 0:
                 return state.getAx();
@@ -109,7 +109,7 @@ public class NgRegisterIndexingDecoder {
      * @param index   CPU's internal register index.
      * @param value   New value for above register.
      */
-    public void setReg16(byte index, short value) {
+    public void setRegister16(byte index, short value) {
         switch (index) {
             case 0:
                 state.setAx(value);
@@ -145,7 +145,7 @@ public class NgRegisterIndexingDecoder {
      * @param index   CPU's internal register index.
      * @return the value of the segment register whose index is given.
      */
-    public short getSeg(byte index) {
+    public short getSegment(byte index) {
         if (index > 7) throw new RuntimeException();
 
         switch (index % 4) {
@@ -167,23 +167,20 @@ public class NgRegisterIndexingDecoder {
      * @param index   CPU's internal register index.
      * @param value   New value for above register.
      */
-    public void setSeg(byte index, short value) {
-        
-        switch (index) {
+    public void setSegment(byte index, short value) {
+        if (index > 7) throw new RuntimeException();
+
+        switch (index % 4) {
             case 0:
-            case 4:
                 state.setEs(value);
                 break;
             case 1:
-            case 5:
                 state.setCs(value);
                 break;
             case 2:
-            case 6:
                 state.setSs(value);
                 break;
             case 3:
-            case 7:
                 state.setDs(value);
                 break;
             default:

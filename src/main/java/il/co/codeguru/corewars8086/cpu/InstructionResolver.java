@@ -18,7 +18,7 @@ public class InstructionResolver {
     }
 
     public Instruction resolve(byte opcode) throws CpuException {
-        if (!instructions.containsKey(opcode)) throw new UnimplementedOpcodeException(opcode);
+        if (!instructions.containsKey(opcode)) throw new UnsupportedOpcodeException(opcode);
 
         return instructions.get(opcode);
     }

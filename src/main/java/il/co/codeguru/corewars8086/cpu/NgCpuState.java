@@ -6,7 +6,18 @@ public class NgCpuState {
     private static final int BITS_PER_BYTE = 8;
     private static final int HIGHER_BYTE_MASK = 0xFF00;
     private static final int LOWER_BYTE_MASK = 0x00FF;
-    
+
+    private static final short FLAGS_MASK_CARRY = 0x0001;
+    private static final short FLAGS_MASK_PARITY = 0x0004;
+    private static final short FLAGS_MASK_AUX = 0x0010;
+    private static final short FLAGS_MASK_ZERO = 0x0040;
+    private static final short FLAGS_MASK_SIGN = 0x0080;
+    private static final short FLAGS_MASK_TRAP = 0x0100;
+    private static final short FLAGS_MASK_INTERRUPT = 0x0200;
+    private static final short FLAGS_MASK_DIRECTION = 0x0400;
+    private static final short FLAGS_MASK_OVERFLOW = 0x0800;
+
+
     private short ax;
     private short bx;
     private short cx;
@@ -215,6 +226,102 @@ public class NgCpuState {
 
     public void setFlags(short flags) {
         this.flags = flags;
+    }
+
+    public boolean getCarryFlag() {
+        return ((flags & FLAGS_MASK_CARRY) == FLAGS_MASK_CARRY);
+    }
+    public boolean getParityFlag() {
+        return ((flags & FLAGS_MASK_PARITY) == FLAGS_MASK_PARITY);
+    }
+    public boolean getAuxFlag() {
+        return ((flags & FLAGS_MASK_AUX) == FLAGS_MASK_AUX);
+    }
+    public boolean getZeroFlag() {
+        return ((flags & FLAGS_MASK_ZERO) == FLAGS_MASK_ZERO);
+    }
+    public boolean getSignFlag() {
+        return ((flags & FLAGS_MASK_SIGN) == FLAGS_MASK_SIGN);
+    }
+    public boolean getTrapFlag() {
+        return ((flags & FLAGS_MASK_TRAP) == FLAGS_MASK_TRAP);
+    }
+    public boolean getInterruptFlag() {
+        return ((flags & FLAGS_MASK_INTERRUPT) == FLAGS_MASK_INTERRUPT);
+    }
+    public boolean getDirectionFlag() {
+        return ((flags & FLAGS_MASK_DIRECTION) == FLAGS_MASK_DIRECTION);
+    }
+    public boolean getOverflowFlag() {
+        return ((flags & FLAGS_MASK_OVERFLOW) == FLAGS_MASK_OVERFLOW);
+    }
+
+    /**
+     * 'set' accessor methods for the various fields of the flags register.
+     * @param newValue whether or not the requested flags field should be set.
+     */
+    public void setCarryFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_CARRY;
+        } else {
+            flags &= (~FLAGS_MASK_CARRY);
+        }
+    }
+    public void setParityFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_PARITY;
+        } else {
+            flags &= (~FLAGS_MASK_PARITY);
+        }
+    }
+    public void setAuxFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_AUX;
+        } else {
+            flags &= (~FLAGS_MASK_AUX);
+        }
+    }
+    public void setZeroFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_ZERO;
+        } else {
+            flags &= (~FLAGS_MASK_ZERO);
+        }
+    }
+    public void setSignFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_SIGN;
+        } else {
+            flags &= (~FLAGS_MASK_SIGN);
+        }
+    }
+    public void setTrapFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_TRAP;
+        } else {
+            flags &= (~FLAGS_MASK_TRAP);
+        }
+    }
+    public void setInterruptFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_INTERRUPT;
+        } else {
+            flags &= (~FLAGS_MASK_INTERRUPT);
+        }
+    }
+    public void setDirectionFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_DIRECTION;
+        } else {
+            flags &= (~FLAGS_MASK_DIRECTION);
+        }
+    }
+    public void setOverflowFlag(boolean newValue) {
+        if (newValue) {
+            flags |= FLAGS_MASK_OVERFLOW;
+        } else {
+            flags &= (~FLAGS_MASK_OVERFLOW);
+        }
     }
 
     public short getEnergy() {
