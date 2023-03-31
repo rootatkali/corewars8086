@@ -128,6 +128,22 @@ public class Utils {
         return result16;
     }
 
+    static byte xor8(NgCpuState state, byte a, byte b) {
+        short result16 = (short) (unsignedByte(a) ^ unsignedByte(b));
+        byte result8 = (byte) result16;
+        updateFlags8(state, result16);
+
+        return result8;
+    }
+
+    static short xor16(NgCpuState state, short a, short b) {
+        int result32 = unsignedShort(a) ^ unsignedShort(b);
+        short result16 = (short) result32;
+        updateFlags16(state, result32);
+
+        return result16;
+    }
+
     static void updateFlags8(NgCpuState state, short value) {
         state.setCarryFlag((value & 0xFF00) != 0);
         updateFlagsNoCarryOverflow8(state, (byte) value);

@@ -19,7 +19,10 @@ public class InvalidInstructions {
      * Contains all opcodes that are valid but were not implemented in the CoreWars8086 CPU.
      * <p>Implementations for these opcodes from the community are welcome! <3
      */
-    private static final int[] UNIMPLEMENTED_OPCODES = { 0x26, 0x27, 0x2E, 0x2F };
+    private static final int[] UNIMPLEMENTED_OPCODES = {
+            0x26, 0x27, 0x2E, 0x2F,
+            0x36, 0x37, 0x3E, 0x3F
+    };
 
     static {
         for (int opcode : INVALID_OPCODES) {
