@@ -4,7 +4,8 @@ import il.co.codeguru.corewars8086.cpu.NgCpuState;
 import il.co.codeguru.corewars8086.memory.MemoryException;
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
 import il.co.codeguru.corewars8086.memory.RealModeMemory;
-import il.co.codeguru.corewars8086.utils.Unsigned;
+
+import static il.co.codeguru.corewars8086.utils.Unsigned.*;
 
 /**
  * Utility methods for all instructions.
@@ -16,15 +17,15 @@ public class Utils {
         memory.writeWord(stackPtr, value);
     }
 
-    private short pop(NgCpuState state, RealModeMemory memory) throws MemoryException {
+    static short pop(NgCpuState state, RealModeMemory memory) throws MemoryException {
         RealModeAddress stackPtr = new RealModeAddress(state.getSs(), state.getSp());
         short value = memory.readWord(stackPtr);
-        state.setSp((short)(state.getSp() + 2));
+        state.setSp((short) (state.getSp() + 2));
         return value;
     }
 
     static byte add8(NgCpuState state, byte a, byte b) {
-        short result16 = (short)(Unsigned.unsignedByte(a) + Unsigned.unsignedByte(b));
+        short result16 = (short) (unsignedByte(a) + unsignedByte(b));
         byte result8 = (byte) result16;
         updateFlags8(state, result16);
 
@@ -32,7 +33,95 @@ public class Utils {
     }
 
     static short add16(NgCpuState state, short a, short b) {
-        int result32 = Unsigned.unsignedShort(a) + Unsigned.unsignedShort(b);
+        int result32 = unsignedShort(a) + unsignedShort(b);
+        short result16 = (short) result32;
+        updateFlags16(state, result32);
+
+        return result16;
+    }
+
+    static byte adc8(NgCpuState state, byte a, byte b) {
+        short result16 = (short) (unsignedByte(a) + unsignedByte(b));
+        if (state.getCarryFlag()) result16++;
+
+        byte result8 = (byte) result16;
+        updateFlags8(state, result16);
+
+        return result8;
+    }
+
+    static short adc16(NgCpuState state, short a, short b) {
+        int result32 = unsignedShort(a) + unsignedShort(b);
+        if (state.getCarryFlag()) result32++;
+
+        short result16 = (short) result32;
+        updateFlags16(state, result32);
+
+        return result16;
+    }
+
+    static byte sbb8(NgCpuState state, byte a, byte b) {
+        short result16 = (short) (unsignedByte(a) - unsignedByte(b));
+        if (state.getCarryFlag()) result16--;
+
+        byte result8 = (byte) result16;
+        updateFlags8(state, result16);
+
+        return result8;
+    }
+
+    static short sbb16(NgCpuState state, short a, short b) {
+        int result32 = unsignedShort(a) - unsignedShort(b);
+        if (state.getCarryFlag()) result32--;
+
+        short result16 = (short) result32;
+        updateFlags16(state, result32);
+
+        return result16;
+    }
+
+    static byte sub8(NgCpuState state, byte a, byte b) {
+        short result16 = (short) (unsignedByte(a) - unsignedByte(b));
+        byte result8 = (byte) result16;
+        updateFlags8(state, result16);
+
+        return result8;
+    }
+
+    static short sub16(NgCpuState state, short a, short b) {
+        int result32 = unsignedShort(a) - unsignedShort(b);
+        short result16 = (short) result32;
+        updateFlags16(state, result32);
+
+        return result16;
+    }
+
+    static byte or8(NgCpuState state, byte a, byte b) {
+        short result16 = (short) (unsignedByte(a) | unsignedByte(b));
+        byte result8 = (byte) result16;
+        updateFlags8(state, result16);
+
+        return result8;
+    }
+
+    static short or16(NgCpuState state, short a, short b) {
+        int result32 = unsignedShort(a) | unsignedShort(b);
+        short result16 = (short) result32;
+        updateFlags16(state, result32);
+
+        return result16;
+    }
+
+    static byte and8(NgCpuState state, byte a, byte b) {
+        short result16 = (short) (unsignedByte(a) & unsignedByte(b));
+        byte result8 = (byte) result16;
+        updateFlags8(state, result16);
+
+        return result8;
+    }
+
+    static short and16(NgCpuState state, short a, short b) {
+        int result32 = unsignedShort(a) & unsignedShort(b);
         short result16 = (short) result32;
         updateFlags16(state, result32);
 
@@ -46,7 +135,7 @@ public class Utils {
 
     static void updateFlags16(NgCpuState state, int value) {
         state.setCarryFlag((value & 0xFFFF0000) != 0);
-
+        updateFlagsNoCarryOverflow16(state, (short) value);
     }
 
     static void updateFlagsNoCarryOverflow8(NgCpuState state, byte value) {
@@ -56,13 +145,13 @@ public class Utils {
     }
 
     static void updateFlagsNoCarryOverflow16(NgCpuState state, short value) {
-        byte byteValue = (byte)value; // In 8086, parity flag is calculated only for lower byte
+        byte byteValue = (byte) value; // In 8086, parity flag is calculated only for lower byte
         state.setParityFlag(getParity(byteValue));
         state.setSignFlag((value & 0x8000) != 0);
         state.setZeroFlag(value == 0);
     }
 
     static boolean getParity(byte value) {
-        return Integer.bitCount(Unsigned.unsignedByte(value)) % 2 == 0;
+        return Integer.bitCount(unsignedByte(value)) % 2 == 0;
     }
 }

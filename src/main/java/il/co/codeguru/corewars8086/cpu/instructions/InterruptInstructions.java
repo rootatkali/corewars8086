@@ -1,22 +1,13 @@
-package il.co.codeguru.corewars8086.cpu;
+package il.co.codeguru.corewars8086.cpu.instructions;
 
+import il.co.codeguru.corewars8086.cpu.*;
 import il.co.codeguru.corewars8086.memory.MemoryException;
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
 import il.co.codeguru.corewars8086.memory.RealModeMemory;
 
-public class InterruptExecutor {
+public class InterruptInstructions {
     private static final InstructionResolver IVT = new InstructionResolver();
-
-    private static void stosdw(NgCpuState state, RealModeMemory memory) throws MemoryException {
-        RealModeAddress address1 = new RealModeAddress(state.getEs(), state.getDi());
-        memory.writeWord(address1, state.getAx());
-
-        RealModeAddress address2 = new RealModeAddress(state.getEs(), (short) (state.getDi() + 2));
-        memory.writeWord(address2, state.getDx());
-
-        byte diff = state.getDirectionFlag() ? (byte) -4 : (byte) 4;
-        state.setDi((short) (state.getDi() + diff));
-    }
+    public static final InstructionResolver INTERRUPT_INSTRUCTIONS = new InstructionResolver();
 
     private static final Instruction INT86 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
         byte bombCount = state.getBruteBombCount();
@@ -29,11 +20,14 @@ public class InterruptExecutor {
             }
         }
     };
-
     private static final Instruction INT87 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
-
+        // TODO Migrate int87
     };
 
+
+    // --== COMMUNITY INTERRUPTS GO HERE ==--
+
+    // --== END OF COMMUNITY INTERRUPTS ==--
     public static final Instruction INTERRUPT = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
         byte interruptIndex = opcodeFetcher.nextByte();
         Instruction interrupt = resolveInterrupt(interruptIndex);
@@ -54,9 +48,18 @@ public class InterruptExecutor {
         }
     }
 
-    public static final InstructionResolver INTERRUPT_INSTRUCTIONS = new InstructionResolver();
-
     static {
         INTERRUPT_INSTRUCTIONS.add((byte) 0xCD, INTERRUPT);
+    }
+
+    private static void stosdw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address1 = new RealModeAddress(state.getEs(), state.getDi());
+        memory.writeWord(address1, state.getAx());
+
+        RealModeAddress address2 = new RealModeAddress(state.getEs(), (short) (state.getDi() + 2));
+        memory.writeWord(address2, state.getDx());
+
+        byte diff = state.getDirectionFlag() ? (byte) -4 : (byte) 4;
+        state.setDi((short) (state.getDi() + diff));
     }
 }
