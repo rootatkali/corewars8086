@@ -10,7 +10,10 @@ public class InvalidInstructions {
     /**
      * Contains all officially invalid opcodes
      */
-    private static final int[] INVALID_OPCODES = { 0x0F };
+    private static final int[] INVALID_OPCODES = {
+            0x0F,
+            0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F
+    };
 
     /**
      * Contains all opcodes that are valid but were not implemented in the CoreWars8086 CPU.
