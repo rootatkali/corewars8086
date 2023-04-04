@@ -3,6 +3,8 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 
+import java.util.function.Function;
+
 import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
 
 public class SubtractionInstructions {
@@ -96,6 +98,19 @@ public class SubtractionInstructions {
     private static final Instruction SUB_AX_IMM16 = (state, memory, opcodeFetcher, registers, addressingDecoder)
             -> state.setAx(sub16(state, state.getAx(), opcodeFetcher.nextWord()));
 
+    /**
+     * 0x48-0x4F - DEC reg16
+     * <p>
+     * This method generates the relevant instruction for each register dynamically.
+     */
+    private static Instruction makeDecReg16(final byte opcode) {
+        return (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+            byte index = (byte) (opcode & 0x07);
+
+            registers.setRegister16(index, dec16(state, registers.getRegister16(index)));
+        };
+    }
+
     static {
         SUBTRACTION_INSTRUCTIONS.add((byte) 0x18, SBB_MEM_REG_8);
         SUBTRACTION_INSTRUCTIONS.add((byte) 0x19, SBB_MEM_REG_16);
@@ -110,5 +125,9 @@ public class SubtractionInstructions {
         SUBTRACTION_INSTRUCTIONS.add((byte) 0x2B, SUB_REG_16_MEM);
         SUBTRACTION_INSTRUCTIONS.add((byte) 0x2C, SUB_AL_IMM8);
         SUBTRACTION_INSTRUCTIONS.add((byte) 0x2D, SUB_AX_IMM16);
+
+        for (byte opcode = (byte) 0x48; opcode < (byte) 0x50; opcode++) {
+            SUBTRACTION_INSTRUCTIONS.add(opcode, makeDecReg16(opcode));
+        }
     }
 }

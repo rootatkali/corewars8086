@@ -24,6 +24,38 @@ public class Utils {
         return value;
     }
 
+    static byte inc8(NgCpuState state, byte value) {
+        boolean carryFlag = state.getCarryFlag();
+        byte result = add8(state, value, (byte) 0x01);
+        state.setCarryFlag(carryFlag);
+
+        return result;
+    }
+
+    static short inc16(NgCpuState state, short value) {
+        boolean carryFlag = state.getCarryFlag();
+        short result = add16(state, value, (short) 0x01);
+        state.setCarryFlag(carryFlag);
+
+        return result;
+    }
+
+    static byte dec8(NgCpuState state, byte value) {
+        boolean carryFlag = state.getCarryFlag();
+        byte result = sub8(state, value, (byte) 0x01);
+        state.setCarryFlag(carryFlag);
+
+        return result;
+    }
+
+    static short dec16(NgCpuState state, short value) {
+        boolean carryFlag = state.getCarryFlag();
+        short result = sub16(state, value, (short) 0x01);
+        state.setCarryFlag(carryFlag);
+
+        return result;
+    }
+
     static byte add8(NgCpuState state, byte a, byte b) {
         short result16 = (short) (unsignedByte(a) + unsignedByte(b));
         byte result8 = (byte) result16;

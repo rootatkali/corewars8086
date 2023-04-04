@@ -3,6 +3,8 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 
+import java.util.function.Function;
+
 import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
 
 public class AdditionInstructions {
@@ -96,6 +98,19 @@ public class AdditionInstructions {
     private static final Instruction ADC_AX_IMM16 = (state, memory, opcodeFetcher, registers, addressingDecoder)
             -> state.setAx(adc16(state, state.getAx(), opcodeFetcher.nextWord()));
 
+    /**
+     * 0x40-0x47 - INC reg16
+     * <p>
+     * This method generates the relevant instruction for each register dynamically.
+     */
+    private static Instruction makeIncReg16(final byte opcode) {
+        return (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+            byte index = (byte) (opcode & 0x07);
+
+            registers.setRegister16(index, inc16(state, registers.getRegister16(index)));
+        };
+    }
+
     static {
         ADDITION_INSTRUCTIONS.add((byte) 0x00, ADD_MEM_REG_8);
         ADDITION_INSTRUCTIONS.add((byte) 0x01, ADD_MEM_REG_16);
@@ -110,5 +125,9 @@ public class AdditionInstructions {
         ADDITION_INSTRUCTIONS.add((byte) 0x13, ADC_REG_16_MEM);
         ADDITION_INSTRUCTIONS.add((byte) 0x14, ADC_AL_IMM8);
         ADDITION_INSTRUCTIONS.add((byte) 0x15, ADC_AX_IMM16);
+
+        for (byte opcode = (byte) 0x40; opcode < (byte) 0x48; opcode++) {
+            ADDITION_INSTRUCTIONS.add(opcode, makeIncReg16(opcode));
+        }
     }
 }
