@@ -211,6 +211,26 @@ public class SetInstructions {
     private static final Instruction LODSW = (state, memory, opcodeFetcher, registers, addressingDecoder)
             ->  lodsw(state, memory);
 
+    /**
+     * 0xB0-0xB7 - MOV reg8, imm8
+     */
+    private static Instruction makeMovRegImm8(byte opcode) {
+        return (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+            byte index = (byte) (opcode & 0x07);
+            registers.setRegister8(index, opcodeFetcher.nextByte());
+        };
+    }
+
+    /**
+     * 0xB8-0xBF - MOV reg16, imm16
+     */
+    private static Instruction makeMovRegImm16(byte opcode) {
+        return (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+            byte index = (byte) (opcode & 0x07);
+            registers.setRegister16(index, opcodeFetcher.nextWord());
+        };
+    }
+
     static {
         SET_INSTRUCTIONS.add((byte) 0x86, XCHG_REG_8_MEM);
         SET_INSTRUCTIONS.add((byte) 0x87, XCHG_REG_16_MEM);
@@ -244,5 +264,13 @@ public class SetInstructions {
         SET_INSTRUCTIONS.add((byte) 0xAB, STOSW);
         SET_INSTRUCTIONS.add((byte) 0xAC, LODSB);
         SET_INSTRUCTIONS.add((byte) 0xAD, LODSW);
+
+        for (byte opcode = (byte) 0xB0; opcode < (byte) 0xB8; opcode++) {
+            SET_INSTRUCTIONS.add(opcode, makeMovRegImm8(opcode));
+        }
+
+        for (byte opcode = (byte) 0xB8; opcode < (byte) 0xC0; opcode++) {
+            SET_INSTRUCTIONS.add(opcode, makeMovRegImm16(opcode));
+        }
     }
 }
