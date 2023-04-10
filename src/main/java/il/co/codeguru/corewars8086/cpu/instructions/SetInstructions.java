@@ -231,6 +231,48 @@ public class SetInstructions {
         };
     }
 
+    /**
+     * 0xC4 - LES reg16, [X]
+     */
+    private static final Instruction LES_REG_16_MEM = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        RealModeAddress address1 = addressingDecoder.getMemoryAddress();
+        if (address1 == null) throw new InvalidOpcodeException("Invalid instruction LES reg16, reg16");
+        RealModeAddress address2 = new RealModeAddress(address1.getSegment(), (short) (address1.getOffset() + 2));
+
+        addressingDecoder.setRegister16(memory.readWord(address1));
+        state.setEs(memory.readWord(address2));
+    };
+
+    /**
+     * 0xC5 - LDS reg16, [X]
+     */
+    private static final Instruction LDS_REG_16_MEM = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        RealModeAddress address1 = addressingDecoder.getMemoryAddress();
+        if (address1 == null) throw new InvalidOpcodeException("Invalid instruction LES reg16, reg16");
+        RealModeAddress address2 = new RealModeAddress(address1.getSegment(), (short) (address1.getOffset() + 2));
+
+        addressingDecoder.setRegister16(memory.readWord(address1));
+        state.setDs(memory.readWord(address2));
+    };
+
+    /**
+     * 0xC6 - MOV [X], imm8
+     */
+    private static final Instruction MOV_MEM_IMM8 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        addressingDecoder.setMemory8(opcodeFetcher.nextByte());
+    };
+
+    /**
+     * 0xC7 - MOV [X], imm16
+     */
+    private static final Instruction MOV_MEM_IMM16 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        addressingDecoder.setMemory16(opcodeFetcher.nextWord());
+    };
+
     static {
         SET_INSTRUCTIONS.add((byte) 0x86, XCHG_REG_8_MEM);
         SET_INSTRUCTIONS.add((byte) 0x87, XCHG_REG_16_MEM);
@@ -245,6 +287,8 @@ public class SetInstructions {
         SET_INSTRUCTIONS.add((byte) 0xA1, MOV_AX_MEM);
         SET_INSTRUCTIONS.add((byte) 0xA2, MOV_MEM_AL);
         SET_INSTRUCTIONS.add((byte) 0xA3, MOV_MEM_AX);
+        SET_INSTRUCTIONS.add((byte) 0xC6, MOV_MEM_IMM8);
+        SET_INSTRUCTIONS.add((byte) 0xC7, MOV_MEM_IMM16);
 
         SET_INSTRUCTIONS.add((byte) 0x8D, LEA_REG_16_MEM);
 
@@ -272,5 +316,8 @@ public class SetInstructions {
         for (byte opcode = (byte) 0xB8; opcode < (byte) 0xC0; opcode++) {
             SET_INSTRUCTIONS.add(opcode, makeMovRegImm16(opcode));
         }
+
+        SET_INSTRUCTIONS.add((byte) 0xC4, LES_REG_16_MEM);
+        SET_INSTRUCTIONS.add((byte) 0xC5, LDS_REG_16_MEM);
     }
 }

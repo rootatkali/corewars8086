@@ -97,6 +97,48 @@ public class StackInstructions {
     private static final Instruction POPF = (state, memory, opcodeFetcher, registers, addressingDecoder)
             -> state.setFlags(pop(state, memory));
 
+    /**
+     * 0xC2 - RETN imm16
+     */
+    private static final Instruction RETN_IMM16 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        short sizeToPop = opcodeFetcher.nextWord();
+        state.setIp(pop(state, memory));
+        state.setSp((short) (state.getSp() + sizeToPop));
+    };
+
+    /**
+     * 0xC3 - RETN
+     */
+    private static final Instruction RETN = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setIp(pop(state, memory));
+
+    /**
+     * 0xCA - RETF imm16
+     */
+    private static final Instruction RETF_IMM16 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        short sizeToPop = opcodeFetcher.nextWord();
+        state.setIp(pop(state, memory));
+        state.setCs(pop(state, memory));
+        state.setSp((short) (state.getSp() + sizeToPop));
+    };
+
+    /**
+     * 0xCB - RETF
+     */
+    private static final Instruction RETF = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        state.setIp(pop(state, memory));
+        state.setCs(pop(state, memory));
+    };
+
+    /**
+     * 0xCF - IRET
+     */
+    private static final Instruction IRET = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        state.setIp(pop(state, memory));
+        state.setCs(pop(state, memory));
+        state.setFlags(pop(state, memory));
+    };
+
     static {
         STACK_INSTRUCTIONS.add((byte) 0x06, PUSH_ES);
         STACK_INSTRUCTIONS.add((byte) 0x07, POP_ES);
@@ -117,5 +159,11 @@ public class StackInstructions {
         STACK_INSTRUCTIONS.add((byte) 0x8F, POP_MEM_16);
         STACK_INSTRUCTIONS.add((byte) 0x9C, PUSHF);
         STACK_INSTRUCTIONS.add((byte) 0x9D, POPF);
+
+        STACK_INSTRUCTIONS.add((byte) 0xC2, RETN_IMM16);
+        STACK_INSTRUCTIONS.add((byte) 0xC3, RETN);
+        STACK_INSTRUCTIONS.add((byte) 0xCA, RETF_IMM16);
+        STACK_INSTRUCTIONS.add((byte) 0xCB, RETF);
+        STACK_INSTRUCTIONS.add((byte) 0xCF, IRET);
     }
 }

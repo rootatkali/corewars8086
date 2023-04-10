@@ -9,6 +9,15 @@ public class InterruptInstructions {
     private static final InstructionResolver IVT = new InstructionResolver();
     public static final InstructionResolver INTERRUPT_INSTRUCTIONS = new InstructionResolver();
 
+    /**
+     * 0xCC - INT 3
+     */
+    private static final Instruction INT3 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        throw new IntOpcodeException("Interrupt 3 not supported");
+    };
+
+
+    // --== CUSTOM INTERRUPTS GO HERE ==--
     private static final Instruction INT86 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
         byte bombCount = state.getBruteBombCount();
 
@@ -21,26 +30,53 @@ public class InterruptInstructions {
         }
     };
     private static final Instruction INT87 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
-        // TODO Migrate int87
+        byte bombCount = state.getSmartBombCount();
+        if (bombCount != 0) {
+            state.setSmartBombCount((byte) (bombCount - 1));
+
+            for (int i = 0; i <= 0xFFFF; i++) {
+                int diff = state.getDirectionFlag() ? -i : i;
+
+                RealModeAddress address1 = new RealModeAddress(state.getEs(), (short) (state.getDi() + diff));
+
+                if (memory.readWord(address1) == state.getAx()) {
+                    RealModeAddress address2 = new RealModeAddress(state.getEs(), (short) (state.getDi() + diff + 2));
+
+                    if (memory.readWord(address2) == state.getDx()) {
+                        memory.writeWord(address1, state.getBx());
+                        memory.writeWord(address2, state.getCx());
+
+                        break;
+                    }
+                }
+            }
+        }
     };
-
-
-    // --== COMMUNITY INTERRUPTS GO HERE ==--
-
-    // --== END OF COMMUNITY INTERRUPTS ==--
-    public static final Instruction INTERRUPT = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
-        byte interruptIndex = opcodeFetcher.nextByte();
-        Instruction interrupt = resolveInterrupt(interruptIndex);
-
-        interrupt.execute(state, memory, opcodeFetcher, registers, addressingDecoder);
-    };
+    // --== END OF CUSTOM INTERRUPTS ==--
 
     static {
         IVT.add((byte) 0x86, INT86);
         IVT.add((byte) 0x87, INT87);
     }
 
-    public static Instruction resolveInterrupt(byte index) throws IntOpcodeException {
+    /**
+     * 0xCD - INT imm8
+     */
+    private static final Instruction INT_IMM8 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        byte interruptIndex = opcodeFetcher.nextByte();
+        Instruction interrupt = resolveInterrupt(interruptIndex);
+
+        interrupt.execute(state, memory, opcodeFetcher, registers, addressingDecoder);
+    };
+
+    /**
+     * 0xCE - INT 0
+     */
+    private static final Instruction INT0 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        throw new IntOpcodeException("Interrupt 0 not supported");
+    };
+
+    private static Instruction resolveInterrupt(byte index) throws IntOpcodeException {
         try {
             return IVT.resolve(index);
         } catch (CpuException e) {
@@ -49,7 +85,9 @@ public class InterruptInstructions {
     }
 
     static {
-        INTERRUPT_INSTRUCTIONS.add((byte) 0xCD, INTERRUPT);
+        INTERRUPT_INSTRUCTIONS.add((byte) 0xCC, INT3);
+        INTERRUPT_INSTRUCTIONS.add((byte) 0xCD, INT_IMM8);
+        INTERRUPT_INSTRUCTIONS.add((byte) 0xCE, INT0);
     }
 
     private static void stosdw(NgCpuState state, RealModeMemory memory) throws MemoryException {
