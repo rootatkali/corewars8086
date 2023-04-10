@@ -3,7 +3,7 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
+import static il.co.codeguru.corewars8086.cpu.instructions.BitwiseUtils.*;
 
 public class BitwiseInstructions {
     public static final InstructionResolver BITWISE_INSTRUCTIONS = new InstructionResolver();

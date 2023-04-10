@@ -3,8 +3,8 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.push;
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.pop;
+import static il.co.codeguru.corewars8086.cpu.instructions.StackUtils.push;
+import static il.co.codeguru.corewars8086.cpu.instructions.StackUtils.pop;
 
 public class StackInstructions {
     public static final InstructionResolver STACK_INSTRUCTIONS = new InstructionResolver();

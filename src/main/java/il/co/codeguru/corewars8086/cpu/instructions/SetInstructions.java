@@ -5,7 +5,7 @@ import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 import il.co.codeguru.corewars8086.cpu.InvalidOpcodeException;
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
 
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
+import static il.co.codeguru.corewars8086.cpu.instructions.SetUtils.*;
 
 public class SetInstructions {
     public static final InstructionResolver SET_INSTRUCTIONS = new InstructionResolver();

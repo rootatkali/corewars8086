@@ -3,7 +3,9 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
+import static il.co.codeguru.corewars8086.cpu.instructions.ArithmeticUtils.sub16;
+import static il.co.codeguru.corewars8086.cpu.instructions.ArithmeticUtils.sub8;
+import static il.co.codeguru.corewars8086.cpu.instructions.BitwiseUtils.*;
 
 public class ComparisonInstructions {
     public static final InstructionResolver COMPARISON_INSTRUCTIONS = new InstructionResolver();

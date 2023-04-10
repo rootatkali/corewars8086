@@ -5,9 +5,7 @@ import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 import il.co.codeguru.corewars8086.cpu.UnsupportedOpcodeException;
 import il.co.codeguru.corewars8086.utils.Unsigned;
 
-import java.util.function.Function;
-
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
+import static il.co.codeguru.corewars8086.cpu.instructions.ArithmeticUtils.*;
 
 public class AdditionInstructions {
     public static final InstructionResolver ADDITION_INSTRUCTIONS = new InstructionResolver();

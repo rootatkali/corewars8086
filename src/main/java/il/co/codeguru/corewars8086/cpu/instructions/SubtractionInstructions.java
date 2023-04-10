@@ -3,9 +3,7 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 
-import java.util.function.Function;
-
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.*;
+import static il.co.codeguru.corewars8086.cpu.instructions.ArithmeticUtils.*;
 
 public class SubtractionInstructions {
     public static final InstructionResolver SUBTRACTION_INSTRUCTIONS = new InstructionResolver();

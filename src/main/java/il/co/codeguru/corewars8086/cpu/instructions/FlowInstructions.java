@@ -6,7 +6,7 @@ import il.co.codeguru.corewars8086.cpu.NgCpuState;
 import il.co.codeguru.corewars8086.cpu.NgOpcodeFetcher;
 import il.co.codeguru.corewars8086.memory.MemoryException;
 
-import static il.co.codeguru.corewars8086.cpu.instructions.Utils.callFar;
+import static il.co.codeguru.corewars8086.cpu.instructions.FlowUtils.callFar;
 
 public class FlowInstructions {
     public static final InstructionResolver FLOW_INSTRUCTIONS = new InstructionResolver();
