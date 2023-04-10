@@ -65,7 +65,7 @@ public class StackInstructions {
     }
 
     /**
-     * 58-0x5F - POP reg16
+     * 0x58-0x5F - POP reg16
      * <p>
      * This function generates the relevant instruction for each register dynamically.
      */
@@ -76,6 +76,26 @@ public class StackInstructions {
             registers.setRegister16(index, pop(state, memory));
         };
     }
+
+    /**
+     * 0x8F - POP [X]
+     */
+    private static final Instruction POP_MEM_16 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        addressingDecoder.setMemory16(pop(state, memory));
+    };
+
+    /**
+     * 0x9C - PUSHF
+     */
+    private static final Instruction PUSHF = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> push(state, memory, state.getFlags());
+
+    /**
+     * 0x9D - POPF
+     */
+    private static final Instruction POPF = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setFlags(pop(state, memory));
 
     static {
         STACK_INSTRUCTIONS.add((byte) 0x06, PUSH_ES);
@@ -93,5 +113,9 @@ public class StackInstructions {
         for (byte opcode = (byte) 0x58; opcode < (byte) 0x60; opcode++) {
             STACK_INSTRUCTIONS.add(opcode, makePopReg16(opcode));
         }
+
+        STACK_INSTRUCTIONS.add((byte) 0x8F, POP_MEM_16);
+        STACK_INSTRUCTIONS.add((byte) 0x9C, PUSHF);
+        STACK_INSTRUCTIONS.add((byte) 0x9D, POPF);
     }
 }

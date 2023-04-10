@@ -2,6 +2,8 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
+import il.co.codeguru.corewars8086.cpu.UnsupportedOpcodeException;
+import il.co.codeguru.corewars8086.utils.Unsigned;
 
 import java.util.function.Function;
 
@@ -111,6 +113,18 @@ public class AdditionInstructions {
         };
     }
 
+    /**
+     * 0x9B - original: WAIT; modified - INC energy (when two consecutive WAIT opcodes are called)
+     */
+    private static final Instruction INC_ENERGY = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        if (opcodeFetcher.nextByte() != (byte) 0x9B) throw new UnsupportedOpcodeException(0x9B);
+
+        int energy = Unsigned.unsignedShort(state.getEnergy());
+        if (energy < 0xFFFF) {
+            state.setEnergy((short) (energy + 1));
+        }
+    };
+
     static {
         ADDITION_INSTRUCTIONS.add((byte) 0x00, ADD_MEM_REG_8);
         ADDITION_INSTRUCTIONS.add((byte) 0x01, ADD_MEM_REG_16);
@@ -129,5 +143,7 @@ public class AdditionInstructions {
         for (byte opcode = (byte) 0x40; opcode < (byte) 0x48; opcode++) {
             ADDITION_INSTRUCTIONS.add(opcode, makeIncReg16(opcode));
         }
+
+        ADDITION_INSTRUCTIONS.add((byte) 0x9B, INC_ENERGY);
     }
 }

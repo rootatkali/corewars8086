@@ -6,6 +6,8 @@ import il.co.codeguru.corewars8086.cpu.NgCpuState;
 import il.co.codeguru.corewars8086.cpu.NgOpcodeFetcher;
 import il.co.codeguru.corewars8086.memory.MemoryException;
 
+import static il.co.codeguru.corewars8086.cpu.instructions.Utils.callFar;
+
 public class FlowInstructions {
     public static final InstructionResolver FLOW_INSTRUCTIONS = new InstructionResolver();
 
@@ -115,6 +117,15 @@ public class FlowInstructions {
         }
     }
 
+    /**
+     * 0x9A - CALL far imm16:imm16
+     */
+    private static final Instruction CALL_FAR_IMM32 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        short newIp = opcodeFetcher.nextWord();
+        short newCs = opcodeFetcher.nextWord();
+        callFar(state, memory, newCs, newIp);
+    };
+
     static {
         FLOW_INSTRUCTIONS.add((byte) 0x70, JO);
         FLOW_INSTRUCTIONS.add((byte) 0x71, JNO);
@@ -132,5 +143,7 @@ public class FlowInstructions {
         FLOW_INSTRUCTIONS.add((byte) 0x7D, JNL_JGE);
         FLOW_INSTRUCTIONS.add((byte) 0x7E, JLE_JNG);
         FLOW_INSTRUCTIONS.add((byte) 0x7F, JNLE_JG);
+
+        FLOW_INSTRUCTIONS.add((byte) 0x9A, CALL_FAR_IMM32);
     }
 }

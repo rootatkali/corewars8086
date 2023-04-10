@@ -202,4 +202,113 @@ public class Utils {
     static boolean getParity(byte value) {
         return Integer.bitCount(unsignedByte(value)) % 2 == 0;
     }
+
+    static void callFar(NgCpuState state, RealModeMemory memory, short segment, short offset) throws MemoryException {
+        push(state, memory, state.getCs());
+        state.setCs(segment);
+        callNear(state, memory, offset);
+    }
+
+    static void callNear(NgCpuState state, RealModeMemory memory, short offset) throws MemoryException {
+        push(state, memory, state.getIp());
+        state.setIp(offset);
+    }
+
+    static void movsb(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress src = new RealModeAddress(state.getDs(), state.getSi());
+        RealModeAddress dst = new RealModeAddress(state.getEs(), state.getDi());
+        memory.writeByte(dst, memory.readByte(src));
+
+        byte diff = state.getDirectionFlag() ? (byte) -1 : (byte) 1;
+        state.setSi((short) (state.getSi() + diff));
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void movsw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress src = new RealModeAddress(state.getDs(), state.getSi());
+        RealModeAddress dst = new RealModeAddress(state.getEs(), state.getDi());
+        memory.writeWord(dst, memory.readWord(src));
+
+        byte diff = state.getDirectionFlag() ? (byte) -2 : (byte) 2;
+        state.setSi((short) (state.getSi() + diff));
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void cmpsb(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address1 = new RealModeAddress(state.getDs(), state.getSi());
+        RealModeAddress address2 = new RealModeAddress(state.getEs(), state.getDi());
+        sub8(state, memory.readByte(address1), memory.readByte(address2));
+
+        byte diff = state.getDirectionFlag() ? (byte) -1 : (byte) 1;
+        state.setSi((short) (state.getSi() + diff));
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void cmpsw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address1 = new RealModeAddress(state.getDs(), state.getSi());
+        RealModeAddress address2 = new RealModeAddress(state.getEs(), state.getDi());
+        sub16(state, memory.readWord(address1), memory.readWord(address2));
+
+        byte diff = state.getDirectionFlag() ? (byte) -2 : (byte) 2;
+        state.setSi((short) (state.getSi() + diff));
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void stosb(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address = new RealModeAddress(state.getEs(), state.getDi());
+        memory.writeByte(address, state.getAl());
+
+        byte diff = state.getDirectionFlag() ? (byte) -1 : (byte) 1;
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void stosw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address = new RealModeAddress(state.getEs(), state.getDi());
+        memory.writeWord(address, state.getAx());
+
+        byte diff = state.getDirectionFlag() ? (byte) -2 : (byte) 2;
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void stosdw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address1 = new RealModeAddress(state.getEs(), state.getDi());
+        RealModeAddress address2 = new RealModeAddress(state.getEs(), (short) (state.getDi() + 2));
+        memory.writeWord(address1, state.getAx());
+        memory.writeWord(address2, state.getDx());
+
+        byte diff = state.getDirectionFlag() ? (byte) -4 : (byte) 4;
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void lodsb(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address = new RealModeAddress(state.getDs(), state.getSi());
+        state.setAl(memory.readByte(address));
+
+        byte diff = state.getDirectionFlag() ? (byte) -1 : (byte) 1;
+        state.setSi((short) (state.getSi() + diff));
+    }
+
+    static void lodsw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address = new RealModeAddress(state.getDs(), state.getSi());
+        state.setAx(memory.readWord(address));
+
+        byte diff = state.getDirectionFlag() ? (byte) -1 : (byte) 1;
+        state.setSi((short) (state.getSi() + diff));
+    }
+
+    static void scasb(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address = new RealModeAddress(state.getEs(), state.getDi());
+        sub8(state, state.getAl(), memory.readByte(address));
+
+        byte diff = state.getDirectionFlag() ? (byte) -1 : (byte) 1;
+        state.setDi((short) (state.getDi() + diff));
+    }
+
+    static void scasw(NgCpuState state, RealModeMemory memory) throws MemoryException {
+        RealModeAddress address = new RealModeAddress(state.getEs(), state.getDi());
+        sub16(state, state.getAx(), memory.readWord(address));
+
+        byte diff = state.getDirectionFlag() ? (byte) -2 : (byte) 2;
+        state.setDi((short) (state.getDi() + diff));
+    }
 }
