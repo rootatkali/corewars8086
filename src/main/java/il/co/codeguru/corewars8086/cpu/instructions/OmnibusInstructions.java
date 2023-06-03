@@ -219,7 +219,81 @@ public class OmnibusInstructions {
                 break;
         }
     };
-
+    
+    /**
+     * 0xD2 - <?> byte ptr [X], CL
+     */
+    private static final Instruction OMNI_BITWISE_MEM8_CL = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        
+        if (addressingDecoder.getRegisterIndex() < 0 || addressingDecoder.getRegisterIndex() >= 8) {
+            throw new IllegalStateException();
+        }
+        
+        switch (addressingDecoder.getRegisterIndex()) {
+            case 0:
+                rol8(state, addressingDecoder, state.getCl());
+                break;
+            case 1:
+                ror8(state, addressingDecoder, state.getCl());
+                break;
+            case 2:
+                rcl8(state, addressingDecoder, state.getCl());
+                break;
+            case 3:
+                rcr8(state, addressingDecoder, state.getCl());
+                break;
+            case 4:
+                shl8(state, addressingDecoder, state.getCl());
+                break;
+            case 5:
+                shr8(state, addressingDecoder, state.getCl());
+                break;
+            case 6:
+                throw new InvalidOpcodeException("Opcode 0xD2 6 invalid");
+            case 7:
+                sar8(state, addressingDecoder, state.getCl());
+                break;
+        }
+    };
+    
+    /**
+     * 0xD3 - <?> byte ptr [X], CL
+     */
+    private static final Instruction OMNI_BITWISE_MEM16_CL = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+        
+        if (addressingDecoder.getRegisterIndex() < 0 || addressingDecoder.getRegisterIndex() >= 8) {
+            throw new IllegalStateException();
+        }
+        
+        switch (addressingDecoder.getRegisterIndex()) {
+            case 0:
+                rol16(state, addressingDecoder, state.getCl());
+                break;
+            case 1:
+                ror16(state, addressingDecoder, state.getCl());
+                break;
+            case 2:
+                rcl16(state, addressingDecoder, state.getCl());
+                break;
+            case 3:
+                rcr16(state, addressingDecoder, state.getCl());
+                break;
+            case 4:
+                shl16(state, addressingDecoder, state.getCl());
+                break;
+            case 5:
+                shr16(state, addressingDecoder, state.getCl());
+                break;
+            case 6:
+                throw new InvalidOpcodeException("Opcode 0xD3 6 invalid");
+            case 7:
+                sar16(state, addressingDecoder, state.getCl());
+                break;
+        }
+    };
+    
     static {
         OMNIBUS_INSTRUCTIONS.add((byte) 0x80, OMNI_ARITHMETIC_MEM_IMM8);
         OMNIBUS_INSTRUCTIONS.add((byte) 0x81, OMNI_ARITHMETIC_MEM_IMM16);
@@ -228,5 +302,7 @@ public class OmnibusInstructions {
 
         OMNIBUS_INSTRUCTIONS.add((byte) 0xD0, OMNI_BITWISE_MEM8_1);
         OMNIBUS_INSTRUCTIONS.add((byte) 0xD1, OMNI_BITWISE_MEM16_1);
+        OMNIBUS_INSTRUCTIONS.add((byte) 0xD2, OMNI_BITWISE_MEM8_CL);
+        OMNIBUS_INSTRUCTIONS.add((byte) 0xD3, OMNI_BITWISE_MEM16_CL);
     }
 }

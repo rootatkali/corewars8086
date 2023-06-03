@@ -4,8 +4,10 @@ import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
 import il.co.codeguru.corewars8086.cpu.InvalidOpcodeException;
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
+import il.co.codeguru.corewars8086.utils.Unsigned;
 
 import static il.co.codeguru.corewars8086.cpu.instructions.SetUtils.*;
+import static il.co.codeguru.corewars8086.utils.Unsigned.unsignedByte;
 
 public class SetInstructions {
     public static final InstructionResolver SET_INSTRUCTIONS = new InstructionResolver();
@@ -272,6 +274,18 @@ public class SetInstructions {
         addressingDecoder.reset();
         addressingDecoder.setMemory16(opcodeFetcher.nextWord());
     };
+    
+    /**
+     * 0xD7 - XLAT, XLATB
+     */
+    private static final Instruction XLAT_XLATB = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        RealModeAddress address = new RealModeAddress(
+                state.getDs(),
+                (short) (state.getBx() + unsignedByte(state.getAl()))
+        );
+        
+        state.setAl(memory.readByte(address));
+    };
 
     static {
         SET_INSTRUCTIONS.add((byte) 0x86, XCHG_REG_8_MEM);
@@ -319,5 +333,7 @@ public class SetInstructions {
 
         SET_INSTRUCTIONS.add((byte) 0xC4, LES_REG_16_MEM);
         SET_INSTRUCTIONS.add((byte) 0xC5, LDS_REG_16_MEM);
+        
+        SET_INSTRUCTIONS.add((byte) 0xD7, XLAT_XLATB);
     }
 }
