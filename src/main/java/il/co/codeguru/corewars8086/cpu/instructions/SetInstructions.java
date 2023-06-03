@@ -286,6 +286,48 @@ public class SetInstructions {
         
         state.setAl(memory.readByte(address));
     };
+    
+    /**
+     * 0xF5 - CMC
+     */
+    private static final Instruction CMC = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setCarryFlag(!state.getCarryFlag());
+    
+    /**
+     * 0xF8 - CLC
+     */
+    private static final Instruction CLC = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setCarryFlag(false);
+    
+    /**
+     * 0xF9 - STC
+     */
+    private static final Instruction STC = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setCarryFlag(true);
+    
+    /**
+     * 0xFA - CLI
+     */
+    private static final Instruction CLI = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setInterruptFlag(false);
+    
+    /**
+     * 0xFB - STI
+     */
+    private static final Instruction STI = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setInterruptFlag(true);
+    
+    /**
+     * 0xFC - CLD
+     */
+    private static final Instruction CLD = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setDirectionFlag(false);
+    
+    /**
+     * 0xFD - STD
+     */
+    private static final Instruction STD = (state, memory, opcodeFetcher, registers, addressingDecoder)
+            -> state.setDirectionFlag(true);
 
     static {
         SET_INSTRUCTIONS.add((byte) 0x86, XCHG_REG_8_MEM);
@@ -335,5 +377,13 @@ public class SetInstructions {
         SET_INSTRUCTIONS.add((byte) 0xC5, LDS_REG_16_MEM);
         
         SET_INSTRUCTIONS.add((byte) 0xD7, XLAT_XLATB);
+        
+        SET_INSTRUCTIONS.add((byte) 0xF5, CMC);
+        SET_INSTRUCTIONS.add((byte) 0xF8, CLC);
+        SET_INSTRUCTIONS.add((byte) 0xF9, STC);
+        SET_INSTRUCTIONS.add((byte) 0xFA, CLI);
+        SET_INSTRUCTIONS.add((byte) 0xFB, STI);
+        SET_INSTRUCTIONS.add((byte) 0xFC, CLD);
+        SET_INSTRUCTIONS.add((byte) 0xFD, STD);
     }
 }

@@ -2,9 +2,12 @@ package il.co.codeguru.corewars8086.cpu.instructions;
 
 import il.co.codeguru.corewars8086.cpu.Instruction;
 import il.co.codeguru.corewars8086.cpu.InstructionResolver;
+import il.co.codeguru.corewars8086.cpu.InvalidOpcodeException;
 
+import static il.co.codeguru.corewars8086.cpu.instructions.BitwiseUtils.*;
 import static il.co.codeguru.corewars8086.cpu.instructions.FlowUtils.callFar;
 import static il.co.codeguru.corewars8086.cpu.instructions.FlowUtils.callNear;
+import static il.co.codeguru.corewars8086.cpu.instructions.SetUtils.*;
 
 public class FlowInstructions {
     public static final InstructionResolver FLOW_INSTRUCTIONS = new InstructionResolver();
@@ -171,6 +174,102 @@ public class FlowInstructions {
         byte offset = opcodeFetcher.nextByte();
         state.setIp((short) (state.getIp() + offset));
     };
+    
+    /**
+     * 0xF2 - REPNZ
+     */
+    private static final Instruction REPNZ = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        byte nextOpcode = opcodeFetcher.nextByte();
+        boolean doneLooping = true;
+        
+        if (state.getCx() != 0) {
+            state.setCx((short) (state.getCx() - 1));
+            doneLooping = false;
+        }
+    
+        if (!doneLooping) {
+            switch (nextOpcode) {
+                case (byte) 0xA6:
+                    cmpsb(state, memory);
+                    break;
+                case (byte) 0xA7:
+                    cmpsw(state, memory);
+                    break;
+                case (byte) 0xAE:
+                    scasb(state, memory);
+                    break;
+                case (byte) 0xAF:
+                    scasw(state, memory);
+                    break;
+                default:
+                    throw new InvalidOpcodeException(String.format("REPNZ %x invalid", nextOpcode));
+            }
+            
+            doneLooping = state.getZeroFlag();
+        }
+        
+        if (!doneLooping) {
+            state.setIp((short) (state.getIp() - 2));
+        }
+    };
+    
+    /**
+     * 0xF3 - REP, REPZ
+     */
+    private static final Instruction REP_REPZ = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        byte nextOpcode = opcodeFetcher.nextByte();
+        boolean doneLooping = true;
+        
+        if (state.getCx() != 0) {
+            state.setCx((short) (state.getCx() - 1));
+            doneLooping = false;
+        }
+        
+        if (!doneLooping) {
+            switch (nextOpcode) {
+                case (byte) 0xA4:
+                    movsb(state, memory);
+                    break;
+                case (byte) 0xA5:
+                    movsw(state, memory);
+                    break;
+                case (byte) 0xA6:
+                    cmpsb(state, memory);
+                    doneLooping = !state.getZeroFlag();
+                    break;
+                case (byte) 0xA7:
+                    cmpsw(state, memory);
+                    doneLooping = !state.getZeroFlag();
+                    break;
+                case (byte) 0xAA:
+                    stosb(state, memory);
+                    break;
+                case (byte) 0xAB:
+                    stosw(state, memory);
+                    break;
+                case (byte) 0xAC:
+                    lodsb(state, memory);
+                    break;
+                case (byte) 0xAD:
+                    lodsw(state, memory);
+                    break;
+                case (byte) 0xAE:
+                    scasb(state, memory);
+                    doneLooping = !state.getZeroFlag();
+                    break;
+                case (byte) 0xAF:
+                    scasw(state, memory);
+                    doneLooping = !state.getZeroFlag();
+                    break;
+                default:
+                    throw new InvalidOpcodeException(String.format("REP %x invalid", nextOpcode));
+            }
+        }
+        
+        if (!doneLooping) {
+            state.setIp((short) (state.getIp() - 2));
+        }
+    };
 
     static {
         FLOW_INSTRUCTIONS.add((byte) 0x70, JO);
@@ -200,5 +299,8 @@ public class FlowInstructions {
         FLOW_INSTRUCTIONS.add((byte) 0xE9, JMP_NEAR_IMM16);
         FLOW_INSTRUCTIONS.add((byte) 0xEA, JMP_FAR_IMM16_IMM16);
         FLOW_INSTRUCTIONS.add((byte) 0xEB, JMP_SHORT_IMM8);
+        
+        FLOW_INSTRUCTIONS.add((byte) 0xF2, REPNZ);
+        FLOW_INSTRUCTIONS.add((byte) 0xF3, REP_REPZ);
     }
 }

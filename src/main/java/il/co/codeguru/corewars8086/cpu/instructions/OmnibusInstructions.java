@@ -1,11 +1,14 @@
 package il.co.codeguru.corewars8086.cpu.instructions;
 
-import il.co.codeguru.corewars8086.cpu.Instruction;
-import il.co.codeguru.corewars8086.cpu.InstructionResolver;
-import il.co.codeguru.corewars8086.cpu.InvalidOpcodeException;
+import il.co.codeguru.corewars8086.cpu.*;
+import il.co.codeguru.corewars8086.memory.RealModeAddress;
 
 import static il.co.codeguru.corewars8086.cpu.instructions.ArithmeticUtils.*;
 import static il.co.codeguru.corewars8086.cpu.instructions.BitwiseUtils.*;
+import static il.co.codeguru.corewars8086.cpu.instructions.FlowUtils.callFar;
+import static il.co.codeguru.corewars8086.cpu.instructions.FlowUtils.callNear;
+import static il.co.codeguru.corewars8086.cpu.instructions.StackUtils.push;
+import static il.co.codeguru.corewars8086.utils.Unsigned.*;
 
 /**
  * Omnibus instructions - the same opcode represents multiple instructions, based on the operands.
@@ -294,6 +297,188 @@ public class OmnibusInstructions {
         }
     };
     
+    /**
+     * 0xF6 - <?> byte ptr [X]
+     */
+    private static final Instruction OMNI_MEM8 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+    
+        if (addressingDecoder.getRegisterIndex() < 0 || addressingDecoder.getRegisterIndex() >= 8) {
+            throw new IllegalStateException();
+        }
+        
+        switch (addressingDecoder.getRegisterIndex()) {
+            case 0:  // TEST imm8
+                and8(state, addressingDecoder.getMemory8(), opcodeFetcher.nextByte());
+                break;
+            case 1:
+                throw new InvalidOpcodeException("0xF6 1 invalid");
+            case 2:  // NOT
+                addressingDecoder.setMemory8((byte) (addressingDecoder.getMemory8() ^ 0xFF));
+                break;
+            case 3:  // NEG
+                addressingDecoder.setMemory8(sub8(state, (byte) 0, addressingDecoder.getMemory8()));
+                break;
+            case 4:  // MUL
+                short result = (short) (unsignedByte(state.getAl()) * unsignedByte(addressingDecoder.getMemory8()));
+                state.setAh((byte) (result >> 8));
+                state.setAl((byte) result);
+                
+                state.setOverflowFlag(state.getAh() != 0);
+                state.setCarryFlag(state.getAh() != 0);
+                break;
+            case 5:  // IMUL
+                throw new UnimplementedOpcodeException();
+            case 6:  // DIV
+                int ax = unsignedShort(state.getAx());
+                short divisor = unsignedByte(addressingDecoder.getMemory8());
+                if (divisor == 0) {
+                    throw new DivisionException();
+                }
+                
+                short quotient = (short) (ax / divisor);
+                if (quotient > 0xFF) {  // divide overflow ?
+                    throw new DivisionException();
+                }
+                
+                state.setAl((byte) quotient);
+                state.setAh((byte) (ax % divisor));
+                break;
+            case 7:  // IDIV
+                throw new UnimplementedOpcodeException();
+        }
+    };
+    
+    /**
+     * 0xF7 - <?> word ptr [X]
+     */
+    private static final Instruction OMNI_MEM16 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+    
+        if (addressingDecoder.getRegisterIndex() < 0 || addressingDecoder.getRegisterIndex() >= 8) {
+            throw new IllegalStateException();
+        }
+        
+        switch (addressingDecoder.getRegisterIndex()) {
+            case 0:  // TEST imm16
+                and16(state, addressingDecoder.getMemory16(), opcodeFetcher.nextWord());
+                break;
+            case 1:
+                throw new InvalidOpcodeException("0xF7 1 invalid");
+            case 2:  // NOT
+                addressingDecoder.setMemory16((short) (addressingDecoder.getMemory16() ^ 0xFFFF));
+                break;
+            case 3:  // NEG
+                addressingDecoder.setMemory16(sub16(state, (short) 0, addressingDecoder.getMemory16()));
+                break;
+            case 4:  // MUL
+                int result = unsignedShort(state.getAx()) * unsignedShort(addressingDecoder.getMemory16());
+                state.setDx((short) (result >> 16));
+                state.setAx((short) result);
+                
+                state.setOverflowFlag(state.getDx() != 0);
+                state.setCarryFlag(state.getDx() != 0);
+                break;
+            case 5:  // IMUL
+                throw new UnimplementedOpcodeException();
+            case 6:  // DIV
+                long dxax = unsignedInt(unsignedShort(state.getDx()) << 16 + unsignedShort(state.getAx()));
+                int divisor = unsignedShort(addressingDecoder.getMemory16());
+                if (divisor == 0) {
+                    throw new DivisionException();
+                }
+                
+                int quotient = (int) (dxax / divisor);
+                if (quotient > 0xFFFF) {  // divide overflow ?
+                    throw new DivisionException();
+                }
+                
+                state.setAx((short) quotient);
+                state.setDx((short) (dxax % divisor));
+                break;
+            case 7:  // IDIV
+                throw new UnimplementedOpcodeException();
+        }
+    };
+    
+    /**
+     * 0xFE - <?> byte ptr [X]
+     */
+    private static final Instruction OMNI_INC_DEC_MEM8 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+    
+        if (addressingDecoder.getRegisterIndex() < 0 || addressingDecoder.getRegisterIndex() >= 2) {
+            throw new IllegalStateException();
+        }
+        
+        if (addressingDecoder.getRegisterIndex() == 0) {  // INC
+            addressingDecoder.setMemory8(inc8(state, addressingDecoder.getMemory8()));
+        } else if (addressingDecoder.getRegisterIndex() == 1) {  // DEC
+            addressingDecoder.setMemory8(dec8(state, addressingDecoder.getMemory8()));
+        }
+    };
+    
+    /**
+     * 0xFF - <?> word ptr [X]
+     */
+    private static final Instruction OMNI_INC_DEC_ETC_MEM16 = (state, memory, opcodeFetcher, registers, addressingDecoder) -> {
+        addressingDecoder.reset();
+    
+        if (addressingDecoder.getRegisterIndex() < 0 || addressingDecoder.getRegisterIndex() >= 8) {
+            throw new IllegalStateException();
+        }
+        
+        switch (addressingDecoder.getRegisterIndex()) {
+            case 0:  // INC
+                addressingDecoder.setMemory16(inc16(state, addressingDecoder.getMemory16()));
+                break;
+            case 1:  // DEC
+                addressingDecoder.setMemory16(dec16(state, addressingDecoder.getMemory16()));
+                break;
+            case 2:  // CALL near
+                callNear(state, memory, addressingDecoder.getMemory16());
+                break;
+            case 3:  // CALL far
+            {
+                RealModeAddress address = addressingDecoder.getMemoryAddress();
+                if (address == null) {
+                    throw new InvalidOpcodeException();
+                }
+    
+                short newIp = memory.readWord(address);
+    
+                address = new RealModeAddress(address.getSegment(), (short) (address.getOffset() + 2));
+                short newCs = memory.readWord(address);
+                callFar(state, memory, newCs, newIp);
+            }
+            break;
+            case 4:  // JMP near
+                // FIXME: JMP SP bug?
+                state.setIp(addressingDecoder.getMemory16());
+                break;
+            case 5:  // JMP far
+            {
+                RealModeAddress address = addressingDecoder.getMemoryAddress();
+                if (address == null) {
+                    throw new InvalidOpcodeException();
+                }
+    
+                short newIp = memory.readWord(address);
+                address = new RealModeAddress(address.getSegment(), (short) (address.getOffset() + 2));
+                short newCs = memory.readWord(address);
+                
+                state.setCs(newCs);
+                state.setIp(newIp);
+            }
+            break;
+            case 6:  // PUSH
+                push(state, memory, addressingDecoder.getMemory16());
+                break;
+            case 7:
+                throw new InvalidOpcodeException("0xFF 7 invalid");
+        }
+    };
+    
     static {
         OMNIBUS_INSTRUCTIONS.add((byte) 0x80, OMNI_ARITHMETIC_MEM_IMM8);
         OMNIBUS_INSTRUCTIONS.add((byte) 0x81, OMNI_ARITHMETIC_MEM_IMM16);
@@ -304,5 +489,10 @@ public class OmnibusInstructions {
         OMNIBUS_INSTRUCTIONS.add((byte) 0xD1, OMNI_BITWISE_MEM16_1);
         OMNIBUS_INSTRUCTIONS.add((byte) 0xD2, OMNI_BITWISE_MEM8_CL);
         OMNIBUS_INSTRUCTIONS.add((byte) 0xD3, OMNI_BITWISE_MEM16_CL);
+        
+        OMNIBUS_INSTRUCTIONS.add((byte) 0xF6, OMNI_MEM8);
+        OMNIBUS_INSTRUCTIONS.add((byte) 0xF7, OMNI_MEM16);
+        OMNIBUS_INSTRUCTIONS.add((byte) 0xFE, OMNI_INC_DEC_MEM8);
+        OMNIBUS_INSTRUCTIONS.add((byte) 0xFF, OMNI_INC_DEC_ETC_MEM16);
     }
 }
