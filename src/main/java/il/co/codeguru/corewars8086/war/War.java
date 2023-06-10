@@ -247,7 +247,8 @@ public class War {
                 initialStack,
                 groupSharedMemory,
                 GROUP_SHARED_MEMORY_SIZE,
-                warrior.getType()
+                warrior.getType(),
+                options.ngCpu
             );
 
             // load warrior to arena

@@ -9,7 +9,7 @@ public class InstructionResolver {
         this(new InstructionResolver[0]);
     }
 
-    private InstructionResolver(InstructionResolver... resolvers) {
+    public InstructionResolver(InstructionResolver... resolvers) {
         this.instructions = new Hashtable<>();
 
         for (InstructionResolver resolver : resolvers) {

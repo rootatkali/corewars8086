@@ -56,6 +56,14 @@ public class Options extends OptionsBase {
   public int zombieSpeed;
   
   @Option(
+      name = "ngCpu",
+      help = "Whether to use the new CPU implementation",
+      category = "Gameplay",
+      defaultValue = "true"
+  )
+  public boolean ngCpu;
+  
+  @Option(
       name = "parallel",
       abbrev = 'p',
       help = "Run multiple battles concurrently - cancel for (pre-)cgx2022 result emulation",

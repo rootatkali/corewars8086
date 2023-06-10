@@ -73,7 +73,7 @@ public class Competition {
 			      }
         }
         competitionEventListener.onCompetitionEnd();
-        warriorRepository.saveScoresToFile(SCORE_FILENAME);
+        warriorRepository.saveScoresToFile(options.outputFile);
     }
     
     public void runCompetitionInParallel(int warsPerCombination, int warriorsPerGroup, int threads) throws InterruptedException {
