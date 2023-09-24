@@ -1,5 +1,6 @@
 package il.co.codeguru.corewars8086.gui;
 
+import il.co.codeguru.corewars8086.cli.Options;
 import il.co.codeguru.corewars8086.memory.MemoryEventListener;
 import il.co.codeguru.corewars8086.memory.RealModeAddress;
 import il.co.codeguru.corewars8086.utils.Unsigned;
@@ -27,6 +28,8 @@ import javax.swing.*;
 public class WarFrame extends JFrame
     implements MemoryEventListener,  CompetitionEventListener, MouseAddressRequest{
 	private static final long serialVersionUID = 1L;
+    
+    private final Options options;
 
 	/** the canvas which show the core war memory area */
     private Canvas warCanvas;
@@ -60,10 +63,11 @@ public class WarFrame extends JFrame
 
 	private MemoryFrame memoryFrame;
 
-    public WarFrame(final Competition competition) {
+    public WarFrame(final Competition competition, Options options) {
         super("CodeGuru Extreme - Session Viewer");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.competition = competition;
+        this.options = options;
         getContentPane().setLayout(new BorderLayout());
 
         // build widgets
@@ -191,12 +195,14 @@ public class WarFrame extends JFrame
 
     /** @see MemoryEventListener#onMemoryWrite(RealModeAddress) */
     public void onMemoryWrite(RealModeAddress address) {
-		int ipInsideArena = address.getLinearAddress() - 0x1000 *0x10; // arena * paragraph
-		
-        if ( address.getLinearAddress() >= War.ARENA_SEGMENT*0x10 && address.getLinearAddress() < 2*War.ARENA_SEGMENT*0x10 ) {
-        	warCanvas.paintPixel(
-        			Unsigned.unsignedShort(ipInsideArena),
-        			(byte)competition.getCurrentWarrior());
+        if (!options.headless) {
+            int ipInsideArena = address.getLinearAddress() - 0x1000 * 0x10; // arena * paragraph
+    
+            if (address.getLinearAddress() >= War.ARENA_SEGMENT * 0x10 && address.getLinearAddress() < 2 * War.ARENA_SEGMENT * 0x10) {
+                warCanvas.paintPixel(
+                        Unsigned.unsignedShort(ipInsideArena),
+                        (byte) competition.getCurrentWarrior());
+            }
         }
     }
 

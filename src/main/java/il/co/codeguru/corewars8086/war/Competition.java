@@ -51,14 +51,14 @@ public class Competition {
         competitionEventCaster = new EventMulticaster(CompetitionEventListener.class);
         competitionEventListener = (CompetitionEventListener) competitionEventCaster.getProxy();
         memoryEventCaster = new EventMulticaster(MemoryEventListener.class);
-        memoryEventListener = (MemoryEventListener) memoryEventCaster.getProxy();
+        if (!options.headless) memoryEventListener = (MemoryEventListener) memoryEventCaster.getProxy();
         speed = MAXIMUM_SPEED;
         abort = false;
         
         this.options = options;
     }
 
-    public void runCompetition (int warsPerCombination, int warriorsPerGroup, boolean startPaused) throws Exception {
+    public void runCompetition(int warsPerCombination, int warriorsPerGroup, boolean startPaused) throws Exception {
         this.warsPerCombination = warsPerCombination;
         competitionIterator = new CompetitionIterator(
             warriorRepository.getNumberOfGroups(), warriorsPerGroup);
@@ -69,8 +69,8 @@ public class Competition {
             runWar(warriorRepository.createGroupList(competitionIterator.next()), startPaused);
             seed ++;
             if (abort) {
-				        break;
-			      }
+                break;
+            }
         }
         competitionEventListener.onCompetitionEnd();
         warriorRepository.saveScoresToFile(SCORE_FILENAME);
@@ -154,19 +154,11 @@ public class Competition {
 
             ++round;
         }
+        
         competitionEventListener.onRound(round);
-
-        int numAlive = currentWar.getNumRemainingWarriors();
-        String names = currentWar.getRemainingWarriorNames();
-
-        if (numAlive == 1) { // we have a single winner!
-            competitionEventListener.onWarEnd(CompetitionEventListener.SINGLE_WINNER, names);
-        } else if (round == MAX_ROUND) { // maximum round reached
-            competitionEventListener.onWarEnd(CompetitionEventListener.MAX_ROUND_REACHED, names);
-        } else { // user abort
-            competitionEventListener.onWarEnd(CompetitionEventListener.ABORTED, names);
-        }
-        currentWar.updateScores(warriorRepository);
+        broadcastWarEnd(currentWar, round);
+        updateWarScores(currentWar);
+        
         currentWar = null;
     }
   
@@ -184,16 +176,16 @@ public class Competition {
     }
     
     competitionEventListener.onRound(round);
-    
     broadcastWarEnd(war, round);
-    
     updateWarScores(war);
   }
   
   private boolean roundLogic(War war, int round, boolean selectedAsCurrent) throws InterruptedException {
-      competitionEventListener.onRound(round);
-      competitionEventListener.onEndRound();
-    
+      if (!options.headless) {
+          competitionEventListener.onRound(round);
+          competitionEventListener.onEndRound();
+      }
+      
       if (selectedAsCurrent && speed != MAXIMUM_SPEED) {
           if (round % speed == 0) {
               Thread.sleep(DELAY_UNIT);
@@ -222,9 +214,9 @@ public class Competition {
   }
   
   private void updateWarScores(War war) {
-//      synchronized (warriorRepository) {
+      synchronized (warriorRepository) {
           war.updateScores(warriorRepository);
-//      }
+      }
   }
   
   public int getCurrentWarrior() {
